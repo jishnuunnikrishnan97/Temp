@@ -1,0 +1,30 @@
+# Initialize empty lists for each column
+bank = []
+amount = []
+facilities = []
+rating = [Rating] * len(data_list)
+
+i = 0
+while i < len(data_list):
+    if any(facility in data_list[i].lower() for facility in facilities_list):
+        # Facility found, populate 'facilities' until the next match
+        facility = data_list[i]
+        i += 1
+        while i < len(data_list) and all(facility not in data_list[i].lower() for facility in facilities_list):
+            facilities.append(facility)
+            bank.append(data_list[i])
+            amount.append(data_list[i + 1])
+            i += 2
+    else:
+        # No facility, store in 'bank' and 'amount' columns
+        bank.append(data_list[i])
+        amount.append(data_list[i + 1])
+        facilities.append(None)
+        i += 2
+
+# Create a DataFrame
+Table = {'bank': bank, 'amount': amount, 'facilities': facilities, 'rating': rating}
+df = pd.DataFrame(Table)
+
+# Print the resulting DataFrame
+print(df)
