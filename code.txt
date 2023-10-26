@@ -1,14 +1,14 @@
-def extract_and_concatenate_text(pdf_path, keyword):
+def extract_text_from_pdf_and_trim(pdf_path, keyword):
     text = ""
     doc = fitz.open(pdf_path)
     
     for page in doc:
         page_text = page.get_text()
-        start_idx = page_text.find(keyword)
+        end_idx = page_text.find(keyword)
         
-        if start_idx != -1:
+        if end_idx != -1:
             # If the keyword is found, extract text up to the keyword
-            text += page_text[:start_idx]
+            text += page_text[:end_idx]
         else:
             # If the keyword is not found on the page, add the entire page text
             text += page_text
