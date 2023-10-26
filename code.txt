@@ -1,6 +1,9 @@
-selected_list = [lst for lst in list_of_lists if any(string.contains(search_string) for string in lst)]
+selected_list = None
+index = None
 
-# Check if the selected list exists
-if selected_list:
-    # Get the index of the search_string in the selected list
-    index = selected_list[0].index(search_string)
+# Iterate through the list_of_lists to find the selected list
+for i, lst in enumerate(list_of_lists):
+    if search_string in lst:
+        selected_list = lst
+        index = lst.index(search_string)
+        break
