@@ -1,9 +1,8 @@
-list_index = -1  # Index of the list
-element_index = -1  # Index of the element containing 'asdk'
-
-# Iterate through the lists
-for i, inner_list in enumerate(data):
-    if 'asdk' in inner_list:
-        list_index = i
-        element_index = inner_list.index('asdk')
-        break
+for i, row in table_df.iterrows():
+    # Find the corresponding 'Facility' in the 'data' DataFrame
+    matching_row = data_df[data_df['Facility'] == row['Facility']]
+    
+    # Check if a match was found
+    if not matching_row.empty:
+        # Populate the 'Rating' column in the 'table' DataFrame
+        table_df.at[i, 'Rating'] = matching_row['Rating'].values[0]
