@@ -1,15 +1,16 @@
-def extract_text_without_footer(pdf_path, regex_pattern):
+def extract_and_concatenate_text(pdf_path, keyword):
     text = ""
     doc = fitz.open(pdf_path)
     
     for page in doc:
-        page_text = page.get_text("text")
-        matches = re.search(regex_pattern, page_text)
+        page_text = page.get_text()
+        start_idx = page_text.find(keyword)
         
-        if matches:
-            # Use the part of the text before the matched pattern
-            text += page_text[:matches.start()]
+        if start_idx != -1:
+            # If the keyword is found, extract text up to the keyword
+            text += page_text[:start_idx]
         else:
+            # If the keyword is not found on the page, add the entire page text
             text += page_text
     
     return text
