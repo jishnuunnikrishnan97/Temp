@@ -1,8 +1,22 @@
-def extract_text_from_pdf(pdf_path):
+def extract_text_from_pdf_and_trim_header(pdf_path):
     text = ""
     doc = fitz.open(pdf_path)
-    
+
     for page in doc:
-        text += page.get_text()
-    
+        page_text = page.get_text()
+
+        # Use a regex pattern to find the header
+        header_pattern = r"www\.hgh\.com \nGIH-\d+"
+        match = re.search(header_pattern, page_text)
+
+        if match:
+            # Find the start index of the matched header
+            start_idx = match.start()
+
+            # Extract text after the header
+            text += page_text[start_idx:]
+        else:
+            # If the header is not found, add the entire page text
+            text += page_text
+
     return text
