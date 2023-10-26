@@ -1,9 +1,9 @@
-selected_list = None
-index = None
+list_index = -1  # Index of the list
+element_index = -1  # Index of the element containing 'asdk'
 
-# Iterate through the list_of_lists to find the selected list
-for i, lst in enumerate(list_of_lists):
-    if search_string in lst:
-        selected_list = lst
-        index = lst.index(search_string)
+# Iterate through the lists
+for i, inner_list in enumerate(data):
+    if 'asdk' in inner_list:
+        list_index = i
+        element_index = inner_list.index('asdk')
         break
