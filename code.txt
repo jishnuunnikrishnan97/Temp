@@ -1,17 +1,8 @@
-def extract_text_from_pdf_and_trim_regex(pdf_path, keyword):
+def extract_text_from_pdf(pdf_path):
     text = ""
     doc = fitz.open(pdf_path)
     
     for page in doc:
-        page_text = page.get_text()
-        pattern = re.compile(keyword, re.IGNORECASE)
-        match = pattern.search(page_text)
-        
-        if match:
-            # If the keyword is found, extract text up to the match
-            text += page_text[:match.start()]
-        else:
-            # If the keyword is not found on the page, add the entire page text
-            text += page_text
+        text += page.get_text()
     
     return text
