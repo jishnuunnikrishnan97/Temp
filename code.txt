@@ -1,3 +1,13 @@
-for index, inner_list in enumerate(list_of_lists):
-    if target_string in inner_list:
-        inner_index = inner_list.index(target_string)
+list_index = -1
+string_index = -1
+
+# Iterate through the list of lists
+for i, sub_list in enumerate(list_of_lists):
+    # Check if 'adsk' is in the list (ignoring case)
+    for j, item in enumerate(sub_list):
+        if item.lower() == search_string.lower():
+            list_index = i
+            string_index = j
+            break  # Exit the inner loop if found
+    if list_index != -1:
+        break  # Exit the outer loop if found
