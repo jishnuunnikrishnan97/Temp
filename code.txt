@@ -1,69 +1,15 @@
-text = extract_text_between_strings(pdf)
-index = text.lower().find('exhibit')
-text = text[index:]
-text = remove_n(text)
-text = re.split(r'(?i) exhibit', text)
-text = [item.strip() for item in text if item.strip()]
-
-tabular = []
-for i in text:
-    each_table = [i]
-    tabular.append(each_table)
-
-split_text = []
-for data_list in tabular:
-    table_list = [ele for item in data_list for ele in item.split('\n')]
-    split_text.append(table_list)
-
-table = pd.DataFrame()
-ext_table = []
-facilities_list = ['non-fund based', 'fund-based', 'standalone']
-
-for data_list in split_text:
-    col_headers = data_list[1:4]
-    data_list = data_list[4:]
-    rating = [item for item in data_list if 'icra' in item.lower()]
-    rating = rating[0]
-    data_list = [item if 'icra' not in item.lower() else item for item in data_list]
-    data_list = [float(x.replace(',', '')) if isinstance(x, str) and x.replace(',', '', 1).isdigit() else x for x in data_list]
-    data_list = [ele.strip() if isinstance(ele, str) else ele for ele in data_list if (isinstance(ele, str) and ele.strip()) or not isinstance(ele, str)]
-
-    bank = []
-    amount = []
-    facilities = []
-    i = 0
-    while i < len(data_list):
-        if any(facility in data_list[i].lower() for facility in facilities_list):
-            facility = data_list[i]
-            i += 1
-            while i < len(data_list) and all(facility not in data_list[i].lower() for facility in facilities_list):
-                facilities.append(facility)
-                if i + 1 < len(data_list):
-                    bank.append(data_list[i])
-                    amount.append(data_list[i + 1])
-                else:
-                    bank.append(None)
-                    amount.append(None)
-                    facilities.append(None)
-                i += 2
+def extract_text_without_footer(pdf_path, regex_pattern):
+    text = ""
+    doc = fitz.open(pdf_path)
+    
+    for page in doc:
+        page_text = page.get_text("text")
+        matches = re.search(regex_pattern, page_text)
+        
+        if matches:
+            # Use the part of the text before the matched pattern
+            text += page_text[:matches.start()]
         else:
-            if i + 1 < len(data_list):
-                bank.append(data_list[i])
-                amount.append(data_list[i + 1])
-                facilities.append(None)
-            else:
-                bank.append(None)
-                amount.append(None)
-                facilities.append(None)
-            i += 2
-    Table = {'Bank': bank, 'Amount': amount, 'Facilities': facilities}
-
-    tab_data = pd.DataFrame(Table)
-
-    tab_data['Rating'] = rating
-    if table.empty:
-        table = tab_data
-    elif table.shape[1] == tab_data.shape[1 and not table.equals(tab_data):
-        table = pd.concat([table, tab_data], ignore_index=True)
-    else:
-        ext_table.append(tab_data)
+            text += page_text
+    
+    return text
