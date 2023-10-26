@@ -1,13 +1,18 @@
-encountered_patterns = set()
+result = []
+temp_list = []
+first_occurrence = True
 
 for item in string_list:
     match = re.search(pattern, item)
+    
     if match:
-        matched_text = match.group(0)
-        if matched_text not in encountered_patterns:
-            # Include the first occurrence
-            encountered_patterns.add(matched_text)
-            result_list_of_lists.append([item])
+        if first_occurrence:
+            temp_list.append(match.group(0))
+            first_occurrence = False
         else:
-            # Exclude the second occurrence
-            result_list_of_lists[-1].append(item)
+            result.append(temp_list)
+            temp_list = [match.group(0)]
+    
+    temp_list.append(item)
+
+result.append(temp_list)  # Add the last part
