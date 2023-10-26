@@ -1,9 +1,13 @@
-def extract_text_from_pdf(pdf_path):
-    text = ""
-    doc = fitz.open(pdf_path)
-    
-    for page in doc:
-        page_text = page.get_text()
-        text += page_text
-    
-    return text
+encountered_patterns = set()
+
+for item in string_list:
+    match = re.search(pattern, item)
+    if match:
+        matched_text = match.group(0)
+        if matched_text not in encountered_patterns:
+            # Include the first occurrence
+            encountered_patterns.add(matched_text)
+            result_list_of_lists.append([item])
+        else:
+            # Exclude the second occurrence
+            result_list_of_lists[-1].append(item)
