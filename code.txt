@@ -6,17 +6,19 @@ data = {'Date1': ['2023-10-25', '2023-10-26', '2023-10-27'],
 
 df = pd.DataFrame(data)
 
-# Check if the two columns have the same name
-if 'Date1' == 'Date2':
+# Find columns with the same name
+duplicate_columns = [col for col in df.columns if df.columns.tolist().count(col) > 1]
+
+if len(duplicate_columns) == 2:
     # Attempt to convert both columns to date format
     try:
-        df['Date1'] = pd.to_datetime(df['Date1'])
-        df['Date2'] = pd.to_datetime(df['Date2'])
+        for col in duplicate_columns:
+            df[col] = pd.to_datetime(df[col])
     except pd.errors.OutOfBoundsDatetime:
         # Drop the column that gives an error when trying to convert
-        df = df.drop(columns='Date2')
+        df = df.drop(columns=duplicate_columns[1])
     except pd.errors.OutOfBoundsDatetime:
-        # Drop the other column that gives an error (if both columns have the same name)
-        df = df.drop(columns='Date1')
+        # Drop the other column that gives an error
+        df = df.drop(columns=duplicate_columns[0])
 
 print(df)
