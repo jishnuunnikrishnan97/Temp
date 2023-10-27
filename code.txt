@@ -1,8 +1,53 @@
-for i, row in table_df.iterrows():
-    # Find the corresponding 'Facility' in the 'data' DataFrame
-    matching_row = data_df[data_df['Facility'] == row['Facility']]
-    
-    # Check if a match was found
-    if not matching_row.empty:
-        # Populate the 'Rating' column in the 'table' DataFrame
-        table_df.at[i, 'Rating'] = matching_row['Rating'].values[0]
+import fitz
+import PyPDF2
+import os
+import pytesseract
+
+# Step 1: Create lists
+not_a_pdf = []
+corrupted = []
+image_pdf = []
+no_tables_to_extract = []
+IR_FITCH = []
+CRISIL = []
+ICRA = []
+CARE = []
+
+# Step 2: Read only PDF files
+folder_path = 'path_to_your_folder'
+for filename in os.listdir(folder_path):
+    if filename.endswith('.pdf'):
+        # Step 3: Check if the PDF is readable
+        try:
+            with open(os.path.join(folder_path, filename), 'rb') as pdf_file:
+                pdf_reader = PyPDF2.PdfFileReader(pdf_file)
+                doc = fitz.open(pdf_file)
+                page = doc[0]
+                page_images = page.get_images(full=True)
+                page_text = page.get_text()
+                
+                # Step 4: Check if pages are images or text is readable
+                if len(page_images) > 0:
+                    image_pdf.append(filename)
+                
+                # Step 5: Extract text from the first page
+                first_page_text = page.get_text("text")
+                # Adjust the cropping rectangle dimensions as needed
+                cropped_text = first_page_text[:100]  # Example: Cropping the first 100 characters
+                
+                # Step 6: Check for specific strings
+                if any(keyword in cropped_text.lower() for keyword in ['fitch', 'india rating']):
+                    IR_FITCH.append(filename)
+                if 'crisil' in cropped_text.lower():
+                    CRISIL.append(filename)
+                if 'icra' in cropped_text.lower():
+                    ICRA.append(filename)
+                if 'care' in cropped_text.lower():
+                    CARE.append(filename)
+                    
+        except (PyPDF2.utils.PdfReadError, fitz.DocumentError):
+            corrupted.append(filename)
+    else:
+        not_a_pdf.append(filename)
+
+# You can now access the lists with the respective filenames as needed.
