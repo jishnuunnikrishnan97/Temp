@@ -1,24 +1,8 @@
-import pandas as pd
-
-# Sample DataFrame with two columns, one containing strings and the other with date data
-data = {'Column1': ['Text1', 'Text2', 'Text3'],
-        'Column1': ['2023-10-27', '2023-10-28', '2023-10-29']}
-
 df = pd.DataFrame(data)
 
-# Check if a column contains date data
-def contains_date_data(column):
-    for value in column:
-        try:
-            pd.to_datetime(value)
-        except ValueError:
-            continue
-        return True
-    return False
-
-# Iterate through columns and drop the one with date data
+# Iterate through columns and drop the one without 'icra' using str.contains
 for column in df.columns:
-    if contains_date_data(df[column]):
+    if df[column].str.contains('icra', case=False, na=False).all():
         df.drop(column, axis=1, inplace=True)
 
 print(df)
