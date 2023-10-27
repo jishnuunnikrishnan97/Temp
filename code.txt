@@ -1,24 +1,24 @@
 import pandas as pd
 
-# Create a sample DataFrame
-data = {'Date1': ['2023-10-25', '2023-10-26', '2023-10-27'],
-        'Date2': ['2023-10-22', 'invalid', '2023-10-29']}
+# Sample DataFrame with two columns, one containing strings and the other with date data
+data = {'Column1': ['Text1', 'Text2', 'Text3'],
+        'Column1': ['2023-10-27', '2023-10-28', '2023-10-29']}
 
 df = pd.DataFrame(data)
 
-# Find columns with the same name
-duplicate_columns = [col for col in df.columns if df.columns.tolist().count(col) > 1]
+# Check if a column contains date data
+def contains_date_data(column):
+    for value in column:
+        try:
+            pd.to_datetime(value)
+        except ValueError:
+            continue
+        return True
+    return False
 
-if len(duplicate_columns) == 2:
-    # Attempt to convert both columns to date format
-    try:
-        for col in duplicate_columns:
-            df[col] = pd.to_datetime(df[col])
-    except pd.errors.OutOfBoundsDatetime:
-        # Drop the column that gives an error when trying to convert
-        df = df.drop(columns=duplicate_columns[1])
-    except pd.errors.OutOfBoundsDatetime:
-        # Drop the other column that gives an error
-        df = df.drop(columns=duplicate_columns[0])
+# Iterate through columns and drop the one with date data
+for column in df.columns:
+    if contains_date_data(df[column]):
+        df.drop(column, axis=1, inplace=True)
 
 print(df)
