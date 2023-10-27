@@ -2,6 +2,8 @@ import fitz
 import PyPDF2
 import os
 import pytesseract
+from PIL import Image
+import io
 
 # Step 1: Create lists
 not_a_pdf = []
@@ -30,10 +32,17 @@ for filename in os.listdir(folder_path):
                 if len(page_images) > 0:
                     image_pdf.append(filename)
                 
-                # Step 5: Extract text from the first page
-                first_page_text = page.get_text("text")
-                # Adjust the cropping rectangle dimensions as needed
-                cropped_text = first_page_text[:100]  # Example: Cropping the first 100 characters
+                # Step 5: Convert the first page to image and extract text from the top 10%
+                image = page.get_pixmap()
+                img_bytes = image.get_pil_image().tobytes()
+                img = Image.open(io.BytesIO(img_bytes))
+                
+                # Crop 10% from the top
+                width, height = img.size
+                cropped_img = img.crop((0, 0, width, int(0.1 * height)))
+                
+                # Use pytesseract to extract text from the cropped image
+                cropped_text = pytesseract.image_to_string(cropped_img)
                 
                 # Step 6: Check for specific strings
                 if any(keyword in cropped_text.lower() for keyword in ['fitch', 'india rating']):
