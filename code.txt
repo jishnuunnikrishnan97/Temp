@@ -1,1 +1,1 @@
-table = table[table['Bank'].str.lower().isin(bank.lower() for bank in hsbc)]
+df.rename(columns=lambda x: "Amount(Rs. Crore)" if any(substring in x.lower() for substring in ['amount', 'rs.', 'crore']) else x, inplace=True)
