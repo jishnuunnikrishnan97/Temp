@@ -1,1 +1,3 @@
-amount = "USD Million" if any("million usd" in item.lower() for item in List) else None
+# Assuming you have a DataFrame named 'df'
+if 'Amount(USD Million)' in df.columns:
+    df.loc[df['Amount(USD Million)'].notna(), 'Amount(USD Million)'] = df.loc[df['Amount(USD Million)'].notna(), 'Amount(USD Million)'].str.replace(',', '', regex=True).astype(float) * 8.25
