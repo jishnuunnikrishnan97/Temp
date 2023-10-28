@@ -1,1 +1,6 @@
-df.rename(columns=lambda x: "Amount(Rs. Crore)" if any(substring in x.lower() for substring in ['amount', 'rs.', 'crore']) else x, inplace=True)
+# Assuming you have a DataFrame named 'df'
+substrings_to_check = ["amount", "rs.", "crore"]
+
+for column in df.columns:
+    if any(substring in column.lower() for substring in substrings_to_check):
+        df.rename(columns={column: "Amount(Rs. Crore)"}, inplace=True)
