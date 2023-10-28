@@ -1,2 +1,2 @@
 # Assuming you have a DataFrame named 'df'
-df = df.loc[:, ~df.columns.str.contains('assigned on', case=False)]
+df = df.rename(columns=lambda x: 'NewColumnName' if all(substring in x.lower() for substring in ['name', 'bank', 'details']) else x)
