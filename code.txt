@@ -1,8 +1,3 @@
-df = pd.DataFrame(data)
-
-# Iterate through columns and drop the one without 'icra' using str.contains
-for column in df.columns:
-    if df[column].str.contains('icra', case=False, na=False).all():
-        df.drop(column, axis=1, inplace=True)
-
-print(df)
+for i in range(num_columns):
+    if df.iloc[:, i].str.contains('icra', case=False, na=False).all():
+        df.drop(df.columns[i], axis=1, inplace=True)
