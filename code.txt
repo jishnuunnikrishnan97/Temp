@@ -1,2 +1,8 @@
 # Assuming you have a DataFrame named 'df'
-df = df.rename(columns=lambda x: 'NewColumnName' if all(substring in x.lower() for substring in ['name', 'bank', 'details']) else x)
+unwanted_colheads = ["rating assigned on", "rating reaffirmed on", "assigned on", "reaffirmed"]
+
+# Create a boolean mask to identify columns with unwanted substrings
+mask = df.columns.to_series().str.contains('|'.join(unwanted_substrings), case=False)
+
+# Use the boolean mask to drop the columns
+df = df.loc[:, ~mask]
