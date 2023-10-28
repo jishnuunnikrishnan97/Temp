@@ -1,6 +1,1 @@
-# Assuming you have a DataFrame named 'df'
-substrings_to_check = ["amount", "rs.", "crore"]
-
-for column in df.columns:
-    if any(substring in column.lower() for substring in substrings_to_check):
-        df.rename(columns={column: "Amount(Rs. Crore)"}, inplace=True)
+amount = "USD Million" if any("million usd" in item.lower() for item in List) else None
