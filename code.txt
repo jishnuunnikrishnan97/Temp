@@ -1,3 +1,14 @@
-for i in range(num_columns):
-    if df.iloc[:, i].str.contains('icra', case=False, na=False).all():
-        df.drop(df.columns[i], axis=1, inplace=True)
+duplicates = df.columns[df.columns.duplicated(keep=False)]
+
+# Rename columns if duplicates are found
+column_names = {}
+for col in duplicates:
+    indices = [i for i, name in enumerate(df.columns) if name == col]
+    for i, index in enumerate(indices, start=1):
+        column_names[col] = f'{col}_{i}'
+df.rename(columns=column_names, inplace=True)
+
+# Iterate through columns and drop the one without 'skin' as a substring
+for column in df.columns:
+    if 'skin' not in df[column].astype(str).str.lower().str:
+        df.drop(column, axis=1, inplace=True)
