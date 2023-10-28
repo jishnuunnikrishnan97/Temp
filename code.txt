@@ -1,3 +1,11 @@
-# Assuming 'table' is your DataFrame
-columns_to_multiply = [col for col in table.columns if 'usd' in col.lower()]
-table[columns_to_multiply] = table[columns_to_multiply].replace({',': ''}, regex=True).astype(float) * 8.25
+# Assuming you have a DataFrame called 'df'
+Kin = ['black', 'van', 'bus', 'slope']
+
+# Count the number of elements in 'Kin' that are substrings in column headers
+count = sum(1 for keyword in Kin if any(keyword in col.lower() for col in df.columns))
+
+# Check if at least 3 elements are found
+if count >= 3:
+    print("At least 3 elements from 'Kin' are substrings in the column headers.")
+else:
+    print("Less than 3 elements from 'Kin' are substrings in the column headers.")
