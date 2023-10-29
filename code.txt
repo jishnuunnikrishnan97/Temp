@@ -1,11 +1,30 @@
-# Assuming you have a DataFrame called 'df'
-Kin = ['black', 'van', 'bus', 'slope']
+import re
 
-# Count the number of elements in 'Kin' that are substrings in column headers
-count = sum(1 for keyword in Kin if any(keyword in col.lower() for col in df.columns))
+# Sample data
+data = {
+    "Facilities": ["Gym", "Pool", "Tennis Court"],
+}
 
-# Check if at least 3 elements are found
-if count >= 3:
-    print("At least 3 elements from 'Kin' are substrings in the column headers.")
-else:
-    print("Less than 3 elements from 'Kin' are substrings in the column headers.")
+kin = ["Tennis Court", "Gym", "Sauna", "Pool"]
+
+# Create a list of strings from the 'Facilities' column
+facility_list = [facility.lower() for facility in data["Facilities"]]
+
+# Initialize an empty list to store the split 'kin' list
+split_kin = []
+
+# Iterate through the 'kin' list
+for item in kin:
+    temp_list = [item]
+    # Iterate through the 'facility_list'
+    for facility in facility_list:
+        # Use regular expressions to check for substrings ignoring case
+        if re.search(re.escape(facility), item, re.I):
+            # Split the 'kin' item and add to 'temp_list'
+            temp_list.extend(re.split(f'({re.escape(facility)})', item, flags=re.I))
+    split_kin.extend(temp_list)
+
+# Remove empty strings and None values
+split_kin = [item for item in split_kin if item and item != ""]
+
+print(split_kin)
