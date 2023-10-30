@@ -1,18 +1,1 @@
-import re
-
-text = ["1. Long fix aspect", "1. Ytfs", "4. Gtfd", "mellow", 6575]
-check_fac = ["long", "short"]
-pattern = r'\d+\.\s\w+'
-
-result = []
-
-for item in text:
-    match = re.search(pattern, item, re.IGNORECASE)
-    if match:
-        matched_text = match.group(0)
-        matched_text = matched_text.split('. ')[1] if any(facility.lower() in matched_text.lower() for facility in check_fac) else matched_text
-        result.append(matched_text)
-    else:
-        result.append(item)
-
-print(result)
+filtered_text = [item for item in text if re.search(pattern, item) and ('term' in item or 'Facility' in item)]
