@@ -1,1 +1,1 @@
-filtered_text = [item for item in text if re.search(pattern, item) and ('term' in item or 'Facility' in item)]
+text = [item for item in result if not re.search(pattern, item) or any(sub in item for sub in ['term', 'facilities'])]
