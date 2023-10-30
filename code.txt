@@ -1,30 +1,16 @@
-import re
+import pandas as pd
 
-# Sample data
-data = {
-    "Facilities": ["Gym", "Pool", "Tennis Court"],
-}
+# Sample lists with different lengths
+list1 = [1, 2, 3, 4]
+list2 = ['A', 'B', 'C']
+list3 = [10, 20]
 
-kin = ["Tennis Court", "Gym", "Sauna", "Pool"]
+# Find the maximum length among the lists
+max_length = max(len(list1), len(list2), len(list3))
 
-# Create a list of strings from the 'Facilities' column
-facility_list = [facility.lower() for facility in data["Facilities"]]
+# Create a DataFrame with padded lists
+df = pd.DataFrame({'Column1': list1 + [None] * (max_length - len(list1),
+                  'Column2': list2 + [None] * (max_length - len(list2)),
+                  'Column3': list3 + [None] * (max_length - len(list3))})
 
-# Initialize an empty list to store the split 'kin' list
-split_kin = []
-
-# Iterate through the 'kin' list
-for item in kin:
-    temp_list = [item]
-    # Iterate through the 'facility_list'
-    for facility in facility_list:
-        # Use regular expressions to check for substrings ignoring case
-        if re.search(re.escape(facility), item, re.I):
-            # Split the 'kin' item and add to 'temp_list'
-            temp_list.extend(re.split(f'({re.escape(facility)})', item, flags=re.I))
-    split_kin.extend(temp_list)
-
-# Remove empty strings and None values
-split_kin = [item for item in split_kin if item and item != ""]
-
-print(split_kin)
+print(df)
