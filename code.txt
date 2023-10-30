@@ -1,2 +1,1 @@
-def check_element(element):
-    return re.match(pattern, element) and not any(sub in element.lower() for sub in ['term', 'facilities'])
+result = [i for i in result if not any(check_element(j) for j in i)]
