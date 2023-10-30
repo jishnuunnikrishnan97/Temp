@@ -1,1 +1,2 @@
-text = [item for item in result if (isinstance(item, str) and (not re.search(pattern, item) or any(sub in item for sub in ['term', 'facilities']))) or not isinstance(item, str)]
+def check_element(element):
+    return re.match(pattern, element) and not any(sub in element.lower() for sub in ['term', 'facilities'])
