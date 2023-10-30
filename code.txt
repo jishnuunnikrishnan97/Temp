@@ -1,1 +1,1 @@
-result = [i for i in result if not any(check_element(j) for j in i)]
+i = [j for j in i if not check_element(j)]
