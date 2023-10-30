@@ -1,1 +1,1 @@
-i = [j for j in i if not check_element(j)]
+result = [[item for item in sub_list if not check_element(item)] for sub_list in result]
