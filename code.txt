@@ -1,1 +1,16 @@
-result = [[item for item in sub_list if not check_element(item)] for sub_list in result]
+# Sample lists
+data = ["apple", "banana", "cherry"]
+temp = ["Orange Juice", "Banana Split", "Grapes", "Strawberry Jam"]
+
+# Convert all elements in data and temp to lowercase for case-insensitive comparison
+data = [item.lower() for item in data]
+temp = [item.lower() for item in temp]
+
+# Use list comprehensions to check for substrings in data and create a list of matches
+matches = [1 for item in temp for substring in data if substring in item]
+
+# Use the sum function to count the number of matches
+count = sum(matches)
+
+# Print the count of matches
+print(f"Number of elements in 'temp' with a substring in 'data': {count}")
