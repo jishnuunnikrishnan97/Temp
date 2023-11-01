@@ -1,15 +1,8 @@
-import pandas as pd
-import numpy as np
+import re
 
-# Sample DataFrame with spaces
-data = {'A': [' ', '  ', '123', ' 45 ', '  ', '678'], 'B': ['abc', ' ', 'def', ' ', '  ', 'ghi']}
-df = pd.DataFrame(data)
+your_string = "This is a test string. applicable Remove everything after this. not This is not part of the result."
 
-# Define a function to replace spaces with NaN
-def replace_space_with_nan(cell):
-    return np.nan if cell.strip() == '' else cell
+# Remove everything after "applicable" or "not"
+result = re.sub(r'(applicable|not).*', '', your_string)
 
-# Apply the function to each cell in the DataFrame
-df = df.applymap(replace_space_with_nan)
-
-print(df)
+print(result)
