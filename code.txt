@@ -1,16 +1,15 @@
-# Sample lists
-data = ["apple", "banana", "cherry"]
-temp = ["Orange Juice", "Banana Split", "Grapes", "Strawberry Jam"]
+import pandas as pd
+import numpy as np
 
-# Convert all elements in data and temp to lowercase for case-insensitive comparison
-data = [item.lower() for item in data]
-temp = [item.lower() for item in temp]
+# Sample DataFrame with spaces
+data = {'A': [' ', '  ', '123', ' 45 ', '  ', '678'], 'B': ['abc', ' ', 'def', ' ', '  ', 'ghi']}
+df = pd.DataFrame(data)
 
-# Use list comprehensions to check for substrings in data and create a list of matches
-matches = [1 for item in temp for substring in data if substring in item]
+# Define a function to replace spaces with NaN
+def replace_space_with_nan(cell):
+    return np.nan if cell.strip() == '' else cell
 
-# Use the sum function to count the number of matches
-count = sum(matches)
+# Apply the function to each cell in the DataFrame
+df = df.applymap(replace_space_with_nan)
 
-# Print the count of matches
-print(f"Number of elements in 'temp' with a substring in 'data': {count}")
+print(df)
