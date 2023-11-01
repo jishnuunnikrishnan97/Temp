@@ -1,18 +1,4 @@
-import re
+def check_element(element):
+    return re.match(pattern, element) and not any(sub in element.lower() for sub in ['term', 'facilities'])
 
-text = ["0. Long ","1. Long fix Facility", "1. Ytfs term", "4. Gtfd", "mellow", 6575]
-check_fac = ["term", "facilities"]
-pattern = r'\d+\.\s\w+'
-
-result = []
-
-for item in text:
-    match = re.search(pattern, item, re.IGNORECASE)
-    if match:
-        matched_text = match.group(0)
-        if any(keyword.lower() in matched_text.lower() for keyword in check_fac):
-            result.append(matched_text)
-    else:
-        result.append(item)
-
-print(result)
+i = [j for j in i if not check_element(j)]
