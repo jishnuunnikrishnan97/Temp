@@ -1,8 +1,18 @@
 import re
 
-your_string = "This is a test string. applicable Remove everything after this. not This is not part of the result."
+text = ["0. Long ","1. Long fix Facility", "1. Ytfs term", "4. Gtfd", "mellow", 6575]
+check_fac = ["term", "facilities"]
+pattern = r'\d+\.\s\w+'
 
-# Remove everything after "applicable" or "not"
-result = re.sub(r'(applicable|not).*', '', your_string)
+result = []
+
+for item in text:
+    match = re.search(pattern, item, re.IGNORECASE)
+    if match:
+        matched_text = match.group(0)
+        if any(keyword.lower() in matched_text.lower() for keyword in check_fac):
+            result.append(matched_text)
+    else:
+        result.append(item)
 
 print(result)
