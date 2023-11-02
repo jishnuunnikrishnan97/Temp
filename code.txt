@@ -1,4 +1,10 @@
-df[['Index', 'taxonomy']] = df['taxonomy'].str.split(' ', 1, expand=True)
+import pandas as pd
 
-# Drop the original 'taxonomy' column
-df = df.drop(columns=['taxonomy'])
+data = {'taxonomy': ['1 trinket hawk', '2a platypus perry', '3c snakes arbock', '4 gerbil jerry']}
+df = pd.DataFrame(data)
+
+# Split the 'taxonomy' column into 'Index' and 'taxonomy'
+df['Index'] = df['taxonomy'].str.split(' ', 1).str[0]
+df['taxonomy'] = df['taxonomy'].str.split(' ', 1).str[1]
+
+print(df)
