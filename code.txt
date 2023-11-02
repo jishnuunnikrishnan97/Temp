@@ -1,1 +1,1 @@
-df = df[list(df.columns[-2:]) + list(df.columns[:-2])]
+df = df.iloc[:, [-1] + list(range(len(df.columns) - 1))]
