@@ -3,8 +3,7 @@ import pandas as pd
 data = {'taxonomy': ['1 trinket hawk', '2a platypus perry', '3c snakes arbock', '4 gerbil jerry']}
 df = pd.DataFrame(data)
 
-# Split the 'taxonomy' column into 'Index' and 'taxonomy'
-df['Index'] = df['taxonomy'].str.split(' ', 1).str[0]
-df['taxonomy'] = df['taxonomy'].str.split(' ', 1).str[1]
+# Use str.extract to split 'taxonomy' into 'Index' and 'taxonomy'
+df[['Index', 'taxonomy']] = df['taxonomy'].str.extract(r'(\d+)\s(.*)')
 
 print(df)
