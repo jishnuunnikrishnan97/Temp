@@ -1,1 +1,17 @@
-df = df.iloc[:, [-1] + list(range(len(df.columns) - 1))]
+import re
+
+# Input string
+input_string = "Reaffirming the rating of the company to improve their outlook."
+
+# Define the pattern to match
+pattern = re.compile(r'reaffirming the rating of(.*?)to', re.IGNORECASE)
+
+# Search for the pattern in the input string
+match = pattern.search(input_string)
+
+# Check if a match is found
+if match:
+    result = match.group(1).strip()
+    print(result)
+else:
+    print("Substring not found.")
