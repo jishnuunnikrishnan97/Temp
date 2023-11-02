@@ -1,17 +1,12 @@
-import re
+main_string = "This is a string reaffirming the rating of cheeta brain; child to example."
+start_marker = "reaffirming the rating of"
+end_marker = "to"
 
-# Input string
-input_string = "Reaffirming the rating of the company to improve their outlook."
+start_index = main_string.find(start_marker)
+end_index = main_string.find(end_marker, start_index + len(start_marker))
 
-# Define the pattern to match
-pattern = re.compile(r'reaffirming the rating of(.*?)to', re.IGNORECASE)
-
-# Search for the pattern in the input string
-match = pattern.search(input_string)
-
-# Check if a match is found
-if match:
-    result = match.group(1).strip()
-    print(result)
+if start_index != -1 and end_index != -1:
+    desired_substring = main_string[start_index + len(start_marker):end_index].strip()
+    print("Desired substring:", desired_substring)
 else:
-    print("Substring not found.")
+    print("Markers not found in the string.")
