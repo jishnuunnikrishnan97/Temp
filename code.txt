@@ -1,1 +1,1 @@
-df[[0, 1, num_columns - 2, num_columns - 1]] = df[[num_columns - 2, num_columns - 1, 0, 1]]
+df = df[list(df.columns[-2:]) + list(df.columns[:-2])]
