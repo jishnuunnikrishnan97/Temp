@@ -1,1 +1,15 @@
-temp = [[j for j in i if not check_element(j)] for i in temp]
+import pandas as pd
+
+# Create a sample DataFrame with variable column names
+data = {'bell': [float('nan'), float('nan')],
+        'Name': ['Alice', 'Bob'],
+        'Info': ['Info1', 'Info2']}
+df = pd.DataFrame(data)
+
+# Concatenate all non-NaN values in each column into a single row
+result = df.apply(lambda x: ' '.join(x.dropna().astype(str)), axis=1)
+
+# Create a new DataFrame with a single row
+result_df = pd.DataFrame([result.values], columns=result.index)
+
+print(result_df)
