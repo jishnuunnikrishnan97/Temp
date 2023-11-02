@@ -1,15 +1,25 @@
-import pandas as pd
+import fitz  # PyMuPDF
 
-# Create a sample DataFrame with variable column names
-data = {'bell': [float('nan'), float('nan')],
-        'Name': ['Alice', 'Bob'],
-        'Info': ['Info1', 'Info2']}
-df = pd.DataFrame(data)
+def find_table_page(pdf_path, keyword):
+    doc = fitz.open(pdf_path)
+    page_number = None
 
-# Concatenate all non-NaN values in each column into a single row
-result = df.apply(lambda x: ' '.join(x.dropna().astype(str)), axis=1)
+    for page_num in range(doc.page_count):
+        page = doc.load_page(page_num)
+        text = page.get_text()
 
-# Create a new DataFrame with a single row
-result_df = pd.DataFrame([result.values], columns=result.index)
+        if keyword in text:
+            page_number = page_num + 1  # Page numbers are 1-based
 
-print(result_df)
+    doc.close()
+    return page_number
+
+# Usage example:
+pdf_path = 'your_pdf_file.pdf'
+keyword = 'Table 10'
+page_number = find_table_page(pdf_path, keyword)
+
+if page_number is not None:
+    print(f"'{keyword}' found on page {page_number}")
+else:
+    print(f"'{keyword}' not found in the PDF.")
