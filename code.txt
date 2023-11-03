@@ -1,7 +1,17 @@
-import pandas as pd
+import os
+import shutil
+from datetime import datetime
 
-# Assuming you have a DataFrame named 'df'.
-# Replace 'df' with the actual name of your DataFrame.
+# Create a timestamp in the format "Prev Run YYYYMMDD-HHMM"
+timestamp = datetime.now().strftime("Prev Run %Y%m%d-%H%M")
 
-# Use boolean indexing to set 'Rating' to 'ball' where 'facilities' contains 'long'.
-df.loc[df['facilities'].str.contains('long'), 'Rating'] = 'ball'
+# Set the names of the source and destination directories
+source_directory = "error pdf"  # Replace with your current error pdf folder name
+archive_directory = "archive"
+
+# Create the "archive" directory if it doesn't exist
+if not os.path.exists(archive_directory):
+    os.mkdir(archive_directory)
+
+# Rename and move the previous "error pdf" folder to the "archive" directory
+shutil.move(source_directory, os.path.join(archive_directory, timestamp))
