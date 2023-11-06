@@ -1,29 +1,15 @@
-import re
-from dateutil.parser import parse
+from dateutil import parser
 
-def extract_date(text):
-    date_formats = [
-        r"%B %d, %Y",
-        r"%d %b %Y",
-        r"%B %Y",
-    ]
-
-    for date_format in date_formats:
-        match = re.search(date_format, text)
-        if match:
-            try:
-                date_str = match.group(0)
-                date_obj = parse(date_str)
-                return date_obj.strftime('%Y-%m-%d %H:%M:%S')  # Format the date as you want
-            except ValueError:
-                continue
-
+def extract_dates(text):
+    words = text.split()
+    for word in words:
+        try:
+            date = parser.parse(word, fuzzy=True)
+            return date.strftime("%B %d, %Y")
+        except ValueError:
+            continue
     return None
 
-# Example usage:
-date_string = "March 28, 2023"
-result = extract_date(date_string)
-if result:
-    print(result)
-else:
-    print("No valid date found in the text.")
+text = "he waited in line at the night of March 28, 2023 and couldnt comprehend the fact that he was alive"
+result = extract_dates(text)
+print(result)
