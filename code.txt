@@ -1,15 +1,15 @@
-from dateutil import parser
+import re
 
-def extract_dates(text):
-    words = text.split()
-    for word in words:
-        try:
-            date = parser.parse(word, fuzzy=True)
-            return date.strftime("%B %d, %Y")
-        except ValueError:
-            continue
-    return None
+# Your main string
+main_string = "Re: This is a test message. Credit rating for bank facilities is important. Rating Assigned and Reaffirmed recently. Bank Name should be XYZ."
 
-text = "he waited in line at the night of March 28, 2023 and couldnt comprehend the fact that he was alive"
-result = extract_dates(text)
+# List of target strings to search for
+target_strings = ["Re:", "Credit rating for bank facilities", "Rating Assigned and Reaffirmed", "Bank Name"]
+
+# Create a regular expression pattern by joining the target strings with '|' (OR) operator
+pattern = '|'.join(re.escape(s) for s in target_strings)
+
+# Use re.sub to remove everything after and with the substring
+result = re.sub(f'({pattern}).*$', '', main_string)
+
 print(result)
