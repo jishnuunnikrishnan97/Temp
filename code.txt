@@ -1,17 +1,18 @@
-import os
-import shutil
-from datetime import datetime
+from dateutil import parser
 
-# Create a timestamp in the format "Prev Run YYYYMMDD-HHMM"
-timestamp = datetime.now().strftime("Prev Run %Y%m%d-%H%M")
+def extract_and_convert_date(text):
+    try:
+        parsed_date = parser.parse(text, fuzzy=True)
+        return parsed_date
+    except ValueError:
+        return None
 
-# Set the names of the source and destination directories
-source_directory = "error pdf"  # Replace with your current error pdf folder name
-archive_directory = "archive"
+# Example usage:
+date_strings = ["March 28, 2023", "21 Apr 2023", "December 2022", "This is some random text"]
+for date_str in date_strings:
+    date = extract_and_convert_date(date_str)
+    if date is not None:
+        print(f"Extracted Date: {date}")
+    else:
+        print("No date found in the text.")
 
-# Create the "archive" directory if it doesn't exist
-if not os.path.exists(archive_directory):
-    os.mkdir(archive_directory)
-
-# Rename and move the previous "error pdf" folder to the "archive" directory
-shutil.move(source_directory, os.path.join(archive_directory, timestamp))
