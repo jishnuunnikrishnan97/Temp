@@ -1,11 +1,24 @@
+import re
 from dateutil.parser import parse
 
 def extract_date(text):
-    try:
-        date_obj = parse(text, fuzzy=True)
-        return date_obj.strftime('%Y-%m-%d %H:%M:%S')  # Format the date as you want
-    except ValueError:
-        return None
+    date_formats = [
+        r"%B %d, %Y",
+        r"%d %b %Y",
+        r"%B %Y",
+    ]
+
+    for date_format in date_formats:
+        match = re.search(date_format, text)
+        if match:
+            try:
+                date_str = match.group(0)
+                date_obj = parse(date_str)
+                return date_obj.strftime('%Y-%m-%d %H:%M:%S')  # Format the date as you want
+            except ValueError:
+                continue
+
+    return None
 
 # Example usage:
 date_string = "March 28, 2023"
