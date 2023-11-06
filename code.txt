@@ -1,18 +1,16 @@
-from dateutil import parser
+from dateutil.parser import parse
 
-def extract_and_convert_date(text):
+def extract_date(text):
     try:
-        parsed_date = parser.parse(text, fuzzy=True)
-        return parsed_date
+        date_obj = parse(text, fuzzy=True)
+        return date_obj.strftime('%Y-%m-%d %H:%M:%S')  # Format the date as you want
     except ValueError:
         return None
 
 # Example usage:
-date_strings = ["March 28, 2023", "21 Apr 2023", "December 2022", "This is some random text"]
-for date_str in date_strings:
-    date = extract_and_convert_date(date_str)
-    if date is not None:
-        print(f"Extracted Date: {date}")
-    else:
-        print("No date found in the text.")
-
+date_string = "March 28, 2023"
+result = extract_date(date_string)
+if result:
+    print(result)
+else:
+    print("No valid date found in the text.")
