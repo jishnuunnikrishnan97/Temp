@@ -4,13 +4,12 @@ def extract_dates(text):
     words = text.split()
     for word in words:
         try:
-            date = parser.parse(word, fuzzy_with_tokens=True)
-            if date[0]:
-                return date[0].strftime("%B %d, %Y")
+            date = parser.parse(word, fuzzy=True)
+            return date.strftime("%B %d, %Y")
         except ValueError:
             continue
     return None
 
-text = "he waited in line at the night of March 28, 2023 and couldn't comprehend the fact that he was alive"
+text = "he waited in line at the night of March 28, 2023 and couldnt comprehend the fact that he was alive"
 result = extract_dates(text)
 print(result)
