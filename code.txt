@@ -2,7 +2,7 @@ import re
 
 def extract_date(text):
     # Define a regular expression pattern to match the date formats
-    date_pattern = r'(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},?\s+\d{4}|\d{1,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{4}'
+    date_pattern = r'(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},?\s+\d{4}|\d{1,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{4}|\w+\s+\d{4}'
 
     # Search for the date pattern in the text (ignoring case)
     match = re.search(date_pattern, text, re.IGNORECASE)
@@ -16,6 +16,6 @@ def extract_date(text):
         return None
 
 # Example usage:
-text = "he waited in line at the night of March 28, 2023 and couldnt comprehend the fact that he was alive"
+text = "he waited in line at the night of March 28, 2023 and couldn't comprehend the fact that he was alive. He also waited in December 2022."
 date = extract_date(text)
 print(date)
