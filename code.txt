@@ -1,46 +1,21 @@
 import re
-from datetime import datetime
 
-def extract_dates(text):
-    # Define a regex pattern to match date formats
-    date_pattern = r'(\d{1,2} (?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]* (?:\d{2,4}))|((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]* \d{1,2}, \d{4})|((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]* \d{4})'
-    
-    # Find all date matches in the text
-    date_matches = re.findall(date_pattern, text)
+def extract_date(text):
+    # Define a regular expression pattern to match the date formats
+    date_pattern = r'(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},?\s+\d{4}|\d{1,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{4}'
 
-    if date_matches:
-        # List of months and their short forms
-        month_list = {
-            "Jan": "January", "Feb": "February", "Mar": "March", "Apr": "April", "May": "May", "Jun": "June",
-            "Jul": "July", "Aug": "August", "Sep": "September", "Oct": "October", "Nov": "November", "Dec": "December"
-        }
+    # Search for the date pattern in the text (ignoring case)
+    match = re.search(date_pattern, text, re.IGNORECASE)
 
-        dates = []
-        for match in date_matches:
-            for group in match:
-                if group:
-                    # Convert the matched date string to datetime format
-                    date_str = group.replace(',', '').strip()
-                    date_obj = None
-
-                    # Try to parse the date string
-                    for month_short, month_full in month_list.items():
-                        date_str = date_str.replace(month_short, month_full)
-                    try:
-                        date_obj = datetime.strptime(date_str, "%B %d %Y")
-                    except ValueError:
-                        pass
-
-                    if date_obj:
-                        dates.append(date_obj.strftime("%B %d, %Y"))
-        return dates
+    if match:
+        # Extract the matched date and return it
+        date_str = match.group(0)
+        return date_str
     else:
+        # Return None if no date is found
         return None
 
 # Example usage:
-text = "he waited in line at the night of March 28, 2023 and couldn't comprehend the fact that he was alive. 21 Apr 2023 is another date, and December 2022."
-result = extract_dates(text)
-if result:
-    print(result)
-else:
-    print("No dates found in the text.")
+text = "he waited in line at the night of March 28, 2023 and couldnt comprehend the fact that he was alive"
+date = extract_date(text)
+print(date)
