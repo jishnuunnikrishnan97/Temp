@@ -1,1 +1,2 @@
 files = [filename for filename in os.listdir(folder_path) if filename.endswith('.pdf')]
+for filename in tqdm(files, desc="Processing PDFs", unit="file"):
