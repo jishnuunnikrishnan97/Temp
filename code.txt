@@ -1,23 +1,24 @@
 import pandas as pd
 
-# Assuming your DataFrame is named "data_frame"
+# Your lists
+not_a_pdf = ["SUDARSHAN CHEMICAL INDUSTRIES LIMITED.pdf"]
+corrupted = ['AngelOnelimited_February 07, 2023_RR_310943.pdf', 'Bajaj Finance Limited_April 18, 2023_RR_317703.pdf']
+image_pdf = ['Fullerton India Credit Company Limited_ICRA (2).pdf', 'L&T Finance ICRA_LTF_BLR_19 12 2022.pdf']
+independent = ['CEAT LIMITED.pdf']
+no_HSBC_data = ["Decor Home Fabrics Private Limited.pdf", 'JSW Cement Limited.pdf']
 
-# Create a new DataFrame "Manual" with rows where 'Customer Id' is "Check Manually"
-manual_df = data_frame[data_frame['Customer Id'] == 'Check Manually']
+# Create a list of tuples containing filename and remark using list comprehensions
+data_tuples = [(filename, 'Not a pdf') for filename in not_a_pdf] + \
+              [(filename, 'Corrupted') for filename in corrupted] + \
+              [(filename, 'Image pdf') for filename in image_pdf] + \
+              [(filename, 'Independent') for filename in independent] + \
+              [(filename, 'no HSBC data') for filename in no_HSBC_data]
 
-# Create a new DataFrame "Partial" with rows where 'Customer Id' is NaN
-partial_df = data_frame[data_frame['Customer Id'].isnull()]
+# Create a dataframe from the list of tuples
+df = pd.DataFrame(data_tuples, columns=['Filename', 'remark'])
 
-# Remove the rows from the original DataFrame "data_frame"
-data_frame = data_frame.drop(manual_df.index)
-data_frame = data_frame.drop(partial_df.index)
+# Modify the "Filename" column as per your requirements
+df['Filename'] = df['Filename'].apply(lambda x: x.replace('_', ' ').capitalize())
 
-# Print or use the new DataFrames as needed
-print("Manual DataFrame:")
-print(manual_df)
-
-print("\nPartial DataFrame:")
-print(partial_df)
-
-print("\nRemaining DataFrame:")
-print(data_frame)
+# Display the resulting dataframe
+print(df)
