@@ -1,24 +1,28 @@
-import pandas as pd
+import fitz  # PyMuPDF
+from docx import Document
 
-# Your lists
-not_a_pdf = ["SUDARSHAN CHEMICAL INDUSTRIES LIMITED.pdf"]
-corrupted = ['AngelOnelimited_February 07, 2023_RR_310943.pdf', 'Bajaj Finance Limited_April 18, 2023_RR_317703.pdf']
-image_pdf = ['Fullerton India Credit Company Limited_ICRA (2).pdf', 'L&T Finance ICRA_LTF_BLR_19 12 2022.pdf']
-independent = ['CEAT LIMITED.pdf']
-no_HSBC_data = ["Decor Home Fabrics Private Limited.pdf", 'JSW Cement Limited.pdf']
+def pdf_to_word(pdf_path, word_path):
+    # Open the PDF file
+    pdf_document = fitz.open(pdf_path)
+    
+    # Create a Word document
+    word_document = Document()
 
-# Create a list of tuples containing filename and remark using list comprehensions
-data_tuples = [(filename, 'Not a pdf') for filename in not_a_pdf] + \
-              [(filename, 'Corrupted') for filename in corrupted] + \
-              [(filename, 'Image pdf') for filename in image_pdf] + \
-              [(filename, 'Independent') for filename in independent] + \
-              [(filename, 'no HSBC data') for filename in no_HSBC_data]
+    for page_number in range(pdf_document.page_count):
+        # Extract text from each page
+        page = pdf_document[page_number]
+        text = page.get_text()
 
-# Create a dataframe from the list of tuples
-df = pd.DataFrame(data_tuples, columns=['Filename', 'remark'])
+        # Add text to the Word document
+        word_document.add_paragraph(text)
 
-# Modify the "Filename" column as per your requirements
-df['Filename'] = df['Filename'].apply(lambda x: x.replace('_', ' ').capitalize())
+    # Save the Word document
+    word_document.save(word_path)
 
-# Display the resulting dataframe
-print(df)
+    # Close the PDF document
+    pdf_document.close()
+
+# Example usage
+pdf_file_path = 'example.pdf'
+word_file_path = 'output.docx'
+pdf_to_word(pdf_file_path, word_file_path)
