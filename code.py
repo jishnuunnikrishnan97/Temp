@@ -1,19 +1,16 @@
 import re
 
-def modify_article_string(input_string):
-    # Use regular expression to find "ARTICLE" between two "\n"
-    article_pattern = re.compile(r'\n(.*ARTICLE.*\n)(.*\n)', re.DOTALL)
+def process_string(input_string):
+    # Define a regular expression pattern to match "\n" conditions
+    pattern = re.compile(r'(?<=\.)\n|(?<=\.\s)\n|\n(\d+|\s*\d+)?')
 
-    # Check if the pattern is present and modify the string accordingly
-    match = article_pattern.search(input_string)
-    if match:
-        modified_string = input_string.replace(match.group(0), match.group(1).rstrip('.') + '.\n' + match.group(2).replace('\n', ' '))
-    else:
-        modified_string = re.sub('(?<!\.)\n(?! )', ' ', input_string)
+    # Use the pattern to replace "\n" based on the specified conditions
+    result_string = re.sub(pattern, lambda match: match.group(0) if match.group(1) else ' ', input_string)
 
-    return modified_string
+    return result_string
 
-# Example usage:
-input_string = "\nArticle 2. - fund replacement\nThis is a\nsample ARTICLE string\nwith\nnewlines.\nAnother ARTICLE example.\n"
-result = modify_article_string(input_string)
-print(result)
+# Example usage
+input_str = "This is a string. It has some\nnewlines.\nThis one is after a number.\n1\nThis is another line."
+output_str = process_string(input_str)
+
+print(output_str)
