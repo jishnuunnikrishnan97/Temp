@@ -1,10 +1,11 @@
 import re
 
-def remove_extra_newlines(input_string):
-    # Use regular expression to replace consecutive "\n" with a single "\n"
-    cleaned_string = re.sub('\n+', '\n', input_string)
+def remove_recurring_lines(input_text):
+    # Define the pattern to match the recurring lines
+    pattern = re.compile(r'\nversion: Aug 2006 page \d+ of \d+\n')
 
-    # Remove leading and trailing "\n"
-    cleaned_string = cleaned_string.strip('\n')
+    # Use the pattern to replace matching lines with an empty string
+    cleaned_text = re.sub(pattern, '', input_text)
 
-    return cleaned_string
+    return cleaned_text
+    
