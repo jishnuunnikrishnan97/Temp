@@ -1,19 +1,12 @@
 import re
 
-def custom_newline_replacement(input_string):
-    # Identify and store occurrences of "ARTICLE" between two "\n"
-    article_matches = re.findall('\nARTICLE\n', input_string)
-
-    # Replace "\n" not after "." with a space, ignoring spaces between "." and "\n"
-    cleaned_string = re.sub('(?<!\.)\n(?!ARTICLE\n)', ' ', input_string)
-
-    # Restore occurrences of "ARTICLE" between two "\n"
-    for match in article_matches:
-        cleaned_string = cleaned_string.replace(match, '\nARTICLE\n')
+def replace_newlines_with_conditions(input_string):
+    # Use regular expression to replace "\n" based on conditions
+    cleaned_string = re.sub(r'(?<=[.])\s*\n\s*|\n(?=ARTICLE)', ' ', input_string)
 
     return cleaned_string
 
 # Example usage:
-input_string = "This is a\nsample.\n\nARTICLE\nText with\nnewlines.\nAnother.\nARTICLE\nMore text.\n"
-result = custom_newline_replacement(input_string)
+input_string = "This is a sample.\n\nARTICLE\nwith newlines.\nAnother\n\nARTICLE\nsection."
+result = replace_newlines_with_conditions(input_string)
 print(result)
