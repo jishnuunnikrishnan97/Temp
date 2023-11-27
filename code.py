@@ -1,15 +1,11 @@
 import re
 
-def process_string(input_string):
-    # Define a regular expression pattern to identify "\n" occurrences based on the given rules
-    pattern = re.compile(r'(?<!\.)\n(?!\d|ARTICLE)')
-    
-    # Replace "\n" occurrences based on the defined pattern
-    output_string = re.sub(pattern, ' ', input_string)
-    
-    return output_string
+def remove_recurring_string(input_string):
+    pattern = r"\nMaster Services Agreement v\d+\.\d+ [A-Za-z]+ \d+ \n(?: \n)*Confidential and Subject to Contract\. \n(?: \n)*\d+"
+    result = re.sub(pattern, "", input_string)
+    return result
 
 # Example usage:
-input_string = "Your long input string here."
-result = process_string(input_string)
-print(result)
+input_string = "Your_long_input_string_here"
+cleaned_string = remove_recurring_string(input_string)
+print(cleaned_string)
