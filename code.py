@@ -1,15 +1,10 @@
-import pandas as pd
+import re
 
-# Your list of strings
-stringlist = ["nato", "mossad", "kgb"]
+def remove_extra_newlines(input_string):
+    # Use regular expression to replace consecutive "\n" with a single "\n"
+    cleaned_string = re.sub('\n+', '\n', input_string)
 
-# Function to check if any whole element from stringlist exists in a table
-def check_and_extract_table(sheet_name):
-    df = pd.read_excel('your_excel_file.xlsx', sheet_name=sheet_name)
-    
-    for column in df.columns:
-        for string in stringlist:
-            if any(df[column].astype(str).str.contains(rf'\b{string}\b', case=False, regex=True)):
-                return df
-    
-    return None
+    # Remove leading and trailing "\n"
+    cleaned_string = cleaned_string.strip('\n')
+
+    return cleaned_string
