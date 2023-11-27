@@ -1,11 +1,8 @@
 import re
 
-def remove_recurring_lines(input_text):
-    # Define the pattern to match the recurring lines
-    pattern = re.compile(r'\nversion: Aug 2006 page \d+ of \d+\n')
+text = """Your long text here"""
 
-    # Use the pattern to replace matching lines with an empty string
-    cleaned_text = re.sub(pattern, '', input_text)
+pattern = re.compile(r'\nVersion: August 29, 2006 Page.*?of 74\n', re.DOTALL)
+modified_text = re.sub(pattern, '', text)
 
-    return cleaned_text
-    
+print(modified_text)
