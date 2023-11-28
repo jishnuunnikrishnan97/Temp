@@ -1,6 +1,27 @@
-bbox = table.bbox
-    # Use OCR to extract text from the bounding box
-    text = pytesseract.image_to_string(image.crop(bbox))
+import img2table
+import pandas as pd
+import cv2
+from PIL import Image
+
+# Load the image using OpenCV
+image = cv2.imread('image.png')
+
+# Convert the NumPy array to a PIL Image object
+pil_image = Image.fromarray(image)
+
+# Extract tables from the image
+extracted_tables = img2table.extract(pil_image)
+
+# Convert each extracted table to a DataFrame
+dataframes = []
+for table in extracted_tables:
+    bbox = table.bbox
+    # Convert the bounding box coordinates to PIL Image coordinates
+    pil_bbox = (bbox[0], bbox[1], bbox[2], bbox[3])
+    # Crop the PIL Image based on the bounding box
+    cropped_image = pil_image.crop(pil_bbox)
+    # Use OCR to extract text from the cropped image
+    text = pytesseract.image_to_string(cropped_image)
     # Parse the text into a list of lists
     data = []
     for row in text.split('\n'):
@@ -8,3 +29,5 @@ bbox = table.bbox
     # Create a DataFrame from the parsed data
     dataframe = pd.DataFrame(data)
     dataframes.append(dataframe)
+
+print(dataframes)
