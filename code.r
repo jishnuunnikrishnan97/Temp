@@ -1,23 +1,23 @@
 import pandas as pd
+import numpy as np
 
-# Assuming df is your DataFrame
-# Replace this with your actual DataFrame
 
-# Example DataFrame
-data = {'A': ['apple', 'orange', 'banana'],
-        'B': ['apple', 'pear', 'banana'],
-        'C': ['Apple', 'Orange', 'Banana']}
 df = pd.DataFrame(data)
 
-# Convert the values in the first row to lowercase and remove spaces
-first_row_values = df.iloc[0].str.lower().str.strip()
+# Function to clean and combine values
+def clean_and_combine(row):
+    cleaned_values = [str(value).strip().lower() for value in row if pd.notna(value)]
+    return ' '.join(cleaned_values) if len(set(cleaned_values)) > 1 else cleaned_values[0]
 
-# Iterate through the columns and combine if necessary
+# Iterate through columns, apply the function to combine values
 for col in df.columns:
-    col_values = df[col].str.lower().str.strip()
+    if col != 'Col1':  # Skip the first column
+        unique_values = df[col].iloc[0]  # Values in the first row
+        if len(set(unique_values)) > 1:
+            df[col] = df[[col, 'Col1']].apply(clean_and_combine, axis=1)
+            
+# Drop duplicate columns
+df = df.T.drop_duplicates().T
 
-    if (col_values == first_row_values).sum() >= 2:
-        df[col] = ' '.join(col_values)
-
-# Display the modified DataFrame
+# Resultant dataframe
 print(df)
