@@ -1,25 +1,23 @@
 import pandas as pd
 
-# Example list "game" with 7 lists
-game = [
-    ["A", "B", "C", "D", "E"],
-    ["F", "G", "H", "I", "J", "K"],
-    ["L", "M", "N", "O", "P", "", "", ""],
-    ["Q", "R", "S", "T", "U", "V", "W", "X"],
-    ["Y", "Z", "AA", "BB", "CC", "DD", "EE", "FF"],
-    ["GG", "HH", "II", "JJ", "KK"],
-    ["LL", "MM", "NN", "OO", "PP", "QQ"]
-]
+# Assuming df is your DataFrame
+# Replace this with your actual DataFrame
 
-# Find the maximum length of lists in "game"
-max_length = max(map(len, game))
+# Example DataFrame
+data = {'A': ['apple', 'orange', 'banana'],
+        'B': ['apple', 'pear', 'banana'],
+        'C': ['Apple', 'Orange', 'Banana']}
+df = pd.DataFrame(data)
 
-# Equalize the length of all lists in "game"
-game = [lst + [""] * (max_length - len(lst)) for lst in game]
+# Convert the values in the first row to lowercase and remove spaces
+first_row_values = df.iloc[0].str.lower().str.strip()
 
-# Create a DataFrame with dynamic column headers
-columns = [f"Col{i+1}" for i in range(max_length)]
-df = pd.DataFrame(game, columns=columns)
+# Iterate through the columns and combine if necessary
+for col in df.columns:
+    col_values = df[col].str.lower().str.strip()
 
-# Display the resulting DataFrame
+    if (col_values == first_row_values).sum() >= 2:
+        df[col] = ' '.join(col_values)
+
+# Display the modified DataFrame
 print(df)
