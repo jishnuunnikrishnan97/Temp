@@ -1,13 +1,25 @@
-import re
+import pandas as pd
 
-def clean_string(input_string):
-    # Remove unwanted spaces, newlines, |, _, and \x0c
-    cleaned_string = re.sub(r'^\s*|\s*$', '', input_string)
-    cleaned_string = re.sub(r'\n|\x0c|\||_', '', cleaned_string)
+# Example list "game" with 7 lists
+game = [
+    ["A", "B", "C", "D", "E"],
+    ["F", "G", "H", "I", "J", "K"],
+    ["L", "M", "N", "O", "P", "", "", ""],
+    ["Q", "R", "S", "T", "U", "V", "W", "X"],
+    ["Y", "Z", "AA", "BB", "CC", "DD", "EE", "FF"],
+    ["GG", "HH", "II", "JJ", "KK"],
+    ["LL", "MM", "NN", "OO", "PP", "QQ"]
+]
 
-    return cleaned_string
+# Find the maximum length of lists in "game"
+max_length = max(map(len, game))
 
-# Example usage:
-bell = " \n\nBank Name\n\x0c"
-cleaned_result = clean_string(bell)
-print(cleaned_result)
+# Equalize the length of all lists in "game"
+game = [lst + [""] * (max_length - len(lst)) for lst in game]
+
+# Create a DataFrame with dynamic column headers
+columns = [f"Col{i+1}" for i in range(max_length)]
+df = pd.DataFrame(game, columns=columns)
+
+# Display the resulting DataFrame
+print(df)
