@@ -1,23 +1,39 @@
 import pandas as pd
 import numpy as np
 
+# Your original dataframe
+data = {' Col1': ['Bank Name','PNB','SIDBI', 'SBI', np.nan, np.nan],
+        'Col2': ['Bank Name',' PNB', 'SIDBI', 'SBI', 'IDBI Bank', 'IDBI'],
+        'Col3': ['Facility Type',' LT FBNFB ','LT FBNFB', 'LT FBNFB', 'LT FBNFB', 'LT FBNFB'],
+        'Col4':[' Amount (Rs in crore) ', '1,000', '1,200', '3,200', '90', '1,035'],
+        'Col5':['Rating', 'TICRAJAAA (Stable)', np.nan, np.nan, np.nan, np.nan],
+        'Col6':['Rating', 'TICRAJAAA (Stable)', np.nan, 'ICRA', 'ICRAJAAA (Stable)', np.nan],
+        'Col7':['Rating', 'TICRAJAAA (Stable)', 'AAA (Stable)', 'AAA (Stable)', np.nan, 'AAA (Stable)']}
 
 df = pd.DataFrame(data)
 
-# Function to clean and combine values
-def clean_and_combine(row):
-    cleaned_values = [str(value).strip().lower() for value in row if pd.notna(value)]
-    return ' '.join(cleaned_values) if len(set(cleaned_values)) > 1 else cleaned_values[0]
+# Function to merge columns based on the first row values
+def merge_columns(df):
+    merged_columns = []
+    merged_values = []
 
-# Iterate through columns, apply the function to combine values
-for col in df.columns:
-    if col != 'Col1':  # Skip the first column
-        unique_values = df[col].iloc[0]  # Values in the first row
-        if len(set(unique_values)) > 1:
-            df[col] = df[[col, 'Col1']].apply(clean_and_combine, axis=1)
-            
-# Drop duplicate columns
-df = df.T.drop_duplicates().T
+    for col in df.columns:
+        col_values = df[col].str.strip().str.lower().unique()
+        col_values = [val for val in col_values if str(val) != 'nan']
+        col_values_str = ' '.join(col_values)
+        
+        merged_columns.append(col)
+        merged_values.append(col_values_str)
 
-# Resultant dataframe
-print(df)
+    result_df = pd.DataFrame({merged_columns[0]: df[merged_columns[0]]})
+    
+    for col, values in zip(merged_columns[1:], merged_values[1:]):
+        result_df[col] = values
+
+    return result_df
+
+# Execute the function
+result_df = merge_columns(df)
+
+# Display the result
+print(result_df)
