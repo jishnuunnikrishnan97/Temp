@@ -1,1 +1,1 @@
-df['Short Term'] = df['Rating'].apply(lambda x: next((s for s in ST if s in x), 'NA'))
+df['Rating'] = df.apply(lambda row: row['Rating'].replace(row['Short Term'], '').strip(), axis=1)
