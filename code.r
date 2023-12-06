@@ -1,7 +1,10 @@
-def extract_paragraph(text):
-    pattern = re.compile(r'\n\d+\.\s*Term.*?(?=\n\d+\.\s*Term|\Z)', re.DOTALL)
-    match = pattern.search(text)
+def remove_before_pattern(text, pattern):
+    # Use re.DOTALL to match across multiple lines
+    match = re.search(pattern, text, re.DOTALL)
+    
     if match:
-        return match.group(0)
+        # Extract everything after the matched pattern
+        result = text[match.start():]
+        return result
     else:
-        return None
+        return text
