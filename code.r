@@ -1,17 +1,20 @@
-import pandas as pd
+import re
 
-# Replace 'YourDataFrame.csv' with your actual DataFrame and provide the correct Excel file path
-df = pd.read_csv('YourDataFrame.csv')
-excel_file_path = 'AllIndiaExpFT30Sep23_Final v1_Working for LT & ST breakup.xlsb'
+def split_paragraphs(input_text):
+    pattern = re.compile(r'\n\d+\.\s\w+')
 
-# Perform VLOOKUP calculation
-result_series = df['A'].map(
-    pd.read_excel(excel_file_path, sheet_name='F&T Sep23', usecols="A,M", skiprows=3, nrows=5587)
-    .set_index('A')
-    .iloc[:, 0]
-) * -1000
+    paragraphs = pattern.split(input_text)
+    headings = pattern.findall(input_text)
 
-# Add the result series to your DataFrame
-df['Result'] = result_series
+    # Remove empty strings from the list
+    paragraphs = [para.strip() for para in paragraphs if para.strip()]
 
-# Now df['Result'] contains the calculated values
+    # Combine paragraphs and headings
+    result = [{'heading': heading, 'paragraph': paragraph} for heading, paragraph in zip(headings, paragraphs)]
+
+    return result
+
+# Example usage:
+input_text = "\n1. Definition Some text here.\n2. Terms More text for terms.\n3. Indemnification Final text for indemnification."
+result = split_paragraphs(input_text)
+print(result)
