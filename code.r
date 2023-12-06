@@ -1,18 +1,7 @@
-import re
-
-def remove_before_pattern(input_text):
-    pattern = re.compile(r'.*?(\n\d+\.\s(?:Terms|Terminologies)\s*\n)')
-
-    match = re.search(pattern, input_text)
-
+def extract_paragraph(text):
+    pattern = re.compile(r'.*?(\n\d+\.\s*Term.*?)(?=\n\d+\.\s*Term|\Z)', re.DOTALL)
+    match = pattern.search(text)
     if match:
-        start_index = match.end(1)
-        result = input_text[start_index:]
-        return result
+        return match.group(1)
     else:
-        return input_text
-
-# Example usage:
-input_text = "Some text before\n3. Terms \nYour content here."
-result = remove_before_pattern(input_text)
-print(result)
+        return None
