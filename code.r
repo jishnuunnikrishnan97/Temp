@@ -1,19 +1,11 @@
-def search_strings(input_text, search_strings):
+def combine_strings_and_handle_empty(dictionary):
     result_dict = {}
 
-    paragraphs = split_paragraphs(input_text)
+    for key, string_list in dictionary.items():
+        if not string_list:
+            string_list.append('No provisions available')
 
-    for search_term in search_strings:
-        search_term_lower = search_term.lower()
-        matching_paragraphs = []
-
-        for entry in paragraphs:
-            heading_lower = entry['heading'].lower()
-            paragraph_lower = entry['paragraph'].lower()
-
-            if search_term_lower in heading_lower or search_term_lower in paragraph_lower:
-                matching_paragraphs.append(entry['paragraph'])
-
-        result_dict[search_term] = matching_paragraphs
+        combined_string = '\n'.join(string_list)
+        result_dict[key] = combined_string
 
     return result_dict
