@@ -1,14 +1,15 @@
-df['Amount'] = df.groupby('Customer ID')['Amount'].transform('sum')
+def search_in_list(strings, input_text):
+    result_list = []
+    paragraphs = split_paragraphs(input_text)
 
-# 2. Sum LT Amount for rows with the same Customer ID
-df['LT Amount'] = df.groupby('Customer ID')['LT Amount'].transform('sum')
-# Take the first non-null LT value for each Customer ID
-df['LT'] = df.groupby('Customer ID')['LT'].transform(lambda x: x.ffill().iat[0])
+    for search_term in strings:
+        search_term_lower = search_term.lower()
 
-# 3. Sum ST Amount for rows with the same Customer ID
-df['ST Amount'] = df.groupby('Customer ID')['ST Amount'].transform('sum')
-# Take the first non-null ST value for each Customer ID
-df['ST'] = df.groupby('Customer ID')['ST'].transform(lambda x: x.ffill().iat[0])
+        for entry in paragraphs:
+            heading_lower = entry['heading'].lower()
+            paragraph_lower = entry['paragraph'].lower()
 
-# 4. Remove duplicate rows
-df = df.drop_duplicates(subset='Customer ID')
+            if search_term_lower in heading_lower or search_term_lower in paragraph_lower:
+                result_list.append(entry['paragraph'])
+
+    return result_list
