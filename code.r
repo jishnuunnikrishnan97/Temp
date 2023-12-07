@@ -1,12 +1,10 @@
-def combine_strings(dictionary):
-    result_dict = {}
-
-    for key, value_list in dictionary.items():
-        if value_list:
-            combined_string = "\n".join(value_list)
+for key, value in input_dict.items():
+        if not value:
+            input_dict[key] = ['No provisions available']
         else:
-            combined_string = 'No provisions available'
+            input_dict[key] = ['\n'.join(value)]
 
-        result_dict[key] = [combined_string]
+    # Add "Customer":[filename] as the first key-value pair
+    input_dict = {"Customer": [filename], **input_dict}
 
-    return result_dict
+    return input_dict
