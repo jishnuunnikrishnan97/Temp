@@ -1,31 +1,15 @@
-import re
+def search_in_list(strings, input_text):
+    result_list = []
+    paragraphs = split_paragraphs(input_text)
 
-def split_paragraphs(input_text):
-    pattern = re.compile(r'\n\d+\.\s[^\d.]+\.?\s*\n\n')
+    for search_term in strings:
+        search_term_lower = search_term.lower()
 
-    # Find all matches of the pattern along with their indices
-    matches = [(match.group(), match.start(), match.end()) for match in pattern.finditer(input_text)]
+        for entry in paragraphs:
+            heading_lower = entry['heading'].lower()
+            paragraph_lower = entry['paragraph'].lower()
 
-    paragraphs = []
-    headings = []
-    last_end = 0
+            if search_term_lower in heading_lower or search_term_lower in paragraph_lower:
+                result_list.append(entry['paragraph'])
 
-    for match, start, end in matches:
-        # Check conditions for invalid heading
-        if (':' in input_text[last_end:start][-20:]) or ('(' in input_text[end:end+20]):
-            # Add to the previous paragraph
-            paragraphs[-1] += match
-        else:
-            # Valid heading, add to the lists
-            headings.append(match)
-            paragraphs.append(input_text[last_end:start].strip())
-
-        last_end = end
-
-    # Add the last paragraph
-    paragraphs.append(input_text[last_end:].strip())
-
-    # Combine paragraphs and headings
-    result = [{'heading': heading, 'paragraph': paragraph} for heading, paragraph in zip(headings, paragraphs)]
-
-    return result
+    return result_list
