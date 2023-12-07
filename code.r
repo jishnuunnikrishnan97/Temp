@@ -1,23 +1,30 @@
-def split_paragraphs(input_text): 
+import re
+
+def split_paragraphs(input_text):
     pattern = re.compile(r'\n\d+\.\s[^\d.]+\.?\s*\n\n')
-    paragraphs = pattern.split(input_text)        
+    paragraphs = pattern.split(input_text)
     headings = pattern.findall(input_text)
 
+    # Remove empty strings from the list
     paragraphs = [para.strip() for para in paragraphs if para.strip()]
 
     result = []
-    prev_paragraph = ""
+    current_paragraph = {'heading': '', 'paragraph': ''}
 
     for heading, paragraph in zip(headings, paragraphs):
-        heading_text = heading.strip()
-
-        # Check condition for heading not being a heading
-        if ':' in heading_text[:20] or ('(' in heading_text[20:] and heading_text[20:].index('(') < 20):
+        # Check if the heading meets the specified conditions
+        if ':' in heading[:20] or '(' in heading[-20:]:
             # Add heading and paragraph to the previous paragraph
-            prev_paragraph += f"\n{heading}{paragraph}"
+            current_paragraph['heading'] += ' ' + heading
+            current_paragraph['paragraph'] += ' ' + paragraph
         else:
-            # Add the heading and paragraph as a new entry
-            result.append({'heading': heading, 'paragraph': paragraph})
-            prev_paragraph = ""
+            # Save the current paragraph and start a new one
+            if current_paragraph['heading']:
+                result.append(current_paragraph)
+            current_paragraph = {'heading': heading, 'paragraph': paragraph}
+
+    # Add the last paragraph to the result
+    if current_paragraph['heading']:
+        result.append(current_paragraph)
 
     return result
