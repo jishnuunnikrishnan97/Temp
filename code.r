@@ -1,11 +1,12 @@
-def combine_strings_and_handle_empty(dictionary):
+def combine_strings(dictionary):
     result_dict = {}
 
-    for key, string_list in dictionary.items():
-        if not string_list:
-            string_list.append('No provisions available')
+    for key, value_list in dictionary.items():
+        if value_list:
+            combined_string = "\n".join(value_list)
+        else:
+            combined_string = 'No provisions available'
 
-        combined_string = '\n'.join(string_list)
-        result_dict[key] = combined_string
+        result_dict[key] = [combined_string]
 
     return result_dict
