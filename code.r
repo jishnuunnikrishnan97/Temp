@@ -1,15 +1,23 @@
-def search_in_list(strings, input_text):
-    result_list = []
-    paragraphs = split_paragraphs(input_text)
+def split_paragraphs(input_text): 
+    pattern = re.compile(r'\n\d+\.\s[^\d.]+\.?\s*\n\n')
+    paragraphs = pattern.split(input_text)        
+    headings = pattern.findall(input_text)
 
-    for search_term in strings:
-        search_term_lower = search_term.lower()
+    paragraphs = [para.strip() for para in paragraphs if para.strip()]
 
-        for entry in paragraphs:
-            heading_lower = entry['heading'].lower()
-            paragraph_lower = entry['paragraph'].lower()
+    result = []
+    prev_paragraph = ""
 
-            if search_term_lower in heading_lower or search_term_lower in paragraph_lower:
-                result_list.append(entry['paragraph'])
+    for heading, paragraph in zip(headings, paragraphs):
+        heading_text = heading.strip()
 
-    return result_list
+        # Check condition for heading not being a heading
+        if ':' in heading_text[:20] or ('(' in heading_text[20:] and heading_text[20:].index('(') < 20):
+            # Add heading and paragraph to the previous paragraph
+            prev_paragraph += f"\n{heading}{paragraph}"
+        else:
+            # Add the heading and paragraph as a new entry
+            result.append({'heading': heading, 'paragraph': paragraph})
+            prev_paragraph = ""
+
+    return result
