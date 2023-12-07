@@ -2,29 +2,30 @@ import re
 
 def split_paragraphs(input_text):
     pattern = re.compile(r'\n\d+\.\s[^\d.]+\.?\s*\n\n')
-    paragraphs = pattern.split(input_text)
-    headings = pattern.findall(input_text)
 
-    # Remove empty strings from the list
-    paragraphs = [para.strip() for para in paragraphs if para.strip()]
+    # Find all matches of the pattern along with their indices
+    matches = [(match.group(), match.start(), match.end()) for match in pattern.finditer(input_text)]
 
-    result = []
-    current_paragraph = {'heading': '', 'paragraph': ''}
+    paragraphs = []
+    headings = []
+    last_end = 0
 
-    for heading, paragraph in zip(headings, paragraphs):
-        # Check if the heading meets the specified conditions
-        if ':' in heading[:20] or '(' in heading[-20:]:
-            # Add heading and paragraph to the previous paragraph
-            current_paragraph['heading'] += ' ' + heading
-            current_paragraph['paragraph'] += ' ' + paragraph
+    for match, start, end in matches:
+        # Check conditions for invalid heading
+        if (':' in input_text[last_end:start][-20:]) or ('(' in input_text[end:end+20]):
+            # Add to the previous paragraph
+            paragraphs[-1] += match
         else:
-            # Save the current paragraph and start a new one
-            if current_paragraph['heading']:
-                result.append(current_paragraph)
-            current_paragraph = {'heading': heading, 'paragraph': paragraph}
+            # Valid heading, add to the lists
+            headings.append(match)
+            paragraphs.append(input_text[last_end:start].strip())
 
-    # Add the last paragraph to the result
-    if current_paragraph['heading']:
-        result.append(current_paragraph)
+        last_end = end
+
+    # Add the last paragraph
+    paragraphs.append(input_text[last_end:].strip())
+
+    # Combine paragraphs and headings
+    result = [{'heading': heading, 'paragraph': paragraph} for heading, paragraph in zip(headings, paragraphs)]
 
     return result
