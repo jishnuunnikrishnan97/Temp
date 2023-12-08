@@ -1,0 +1,1 @@
+re.compile(r'\nARTICLE \d+\.\s*-\s*[^\n]+ \n')  # Updated regex pattern
