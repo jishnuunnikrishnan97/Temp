@@ -1,2 +1,5 @@
-I have an data frame with the column 'SSN'.
-The task is to remove the complete row where the column 'SSN' is a Nan value or the length of the string in the row of the column 'SSN' is less than 10 or more than 10
+import pandas as pd
+
+# Assuming your DataFrame is named 'df'
+df = df.dropna(subset=['SSN'])  # Remove rows where 'SSN' is NaN
+df = df[df['SSN'].astype(str).str.len() == 10]  # Keep rows with 'SSN' length equal to 10
