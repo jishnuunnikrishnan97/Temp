@@ -1,10 +1,15 @@
-for key, value in input_dict.items():
-        if not value:
-            input_dict[key] = ['No provisions available']
-        else:
-            input_dict[key] = ['\n'.join(value)]
+import re
 
-    # Add "Customer":[filename] as the first key-value pair
-    input_dict = {"Customer": [filename], **input_dict}
+def split_paragraphs(input_text): 
+    pattern = re.compile(r'\nARTICLE \d+\.\s*-\s*[^\n]+ \n')  # Updated regex pattern
 
-    return input_dict
+    paragraphs = pattern.split(input_text)
+    headings = pattern.findall(input_text)
+
+    # Remove empty strings from the list
+    paragraphs = [para.strip() for para in paragraphs if para.strip()]
+
+    # Combine paragraphs and headings
+    result = [{'heading': heading, 'paragraph': paragraph} for heading, paragraph in zip(headings, paragraphs)]
+
+    return result
