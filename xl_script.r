@@ -1,22 +1,23 @@
 import pandas as pd
 
-# Assuming your DataFrame is named 'df'
-# Step 1
-df['amt_sum'] = df.groupby(['Cust ID', 'SSN', 'rating'])['amt'].transform('sum')
-df = df[df.duplicated(['Cust ID', 'SSN', 'rating'], keep=False) | ~df.duplicated(['Cust ID', 'SSN', 'rating'])]
+# Assuming your DataFrame is named df
+# Task 1
+df['amt'] = df.groupby(['Cust ID', 'SSN', 'rating'])['amt'].transform('sum')
+df = df.drop_duplicates(['Cust ID', 'SSN', 'rating']).reset_index(drop=True)
 
-# Step 2
+# Task 2
 unique_ratings = df['rating'].nunique()
-df = pd.concat([df, pd.get_dummies(df['rating'])], axis=1)
+df = pd.concat([df, pd.DataFrame(0, index=df.index, columns=[f'rating_{i}' for i in range(unique_ratings)])], axis=1)
 
-# Step 3
-for rating in df['rating'].unique():
-    mask = (df.duplicated(['Cust ID', 'SSN']) & (df['rating'] == rating))
-    df[rating] = df.loc[mask, 'amt']
-    df.loc[mask, 'amt'] = df.loc[mask, 'amt'].sum()
-df = df[~df.duplicated(['Cust ID', 'SSN'])]
+# Task 3
+for index, row in df.iterrows():
+    same_cust_ssn = df[(df['Cust ID'] == row['Cust ID']) & (df['SSN'] == row['SSN'])]
+    if len(same_cust_ssn['rating'].unique()) > 1:
+        for rating in same_cust_ssn['rating'].unique():
+            df.loc[index, f'rating_{rating}'] = same_cust_ssn[same_cust_ssn['rating'] == rating]['amt'].sum()
+        df = df.drop(same_cust_ssn.index.difference([index]))
 
-# Step 4
+# Task 4
 df = df.drop('rating', axis=1)
 
 # Display the resulting DataFrame
