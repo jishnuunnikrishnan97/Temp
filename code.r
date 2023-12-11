@@ -1,15 +1,7 @@
-import re
+pattern = r'^\d{3}-\d{6}$'
 
-def split_paragraphs(input_text): 
-    pattern = re.compile(r'\nARTICLE \d+\.\s*-\s*[^\n]+ \n')  # Updated regex pattern
+# Use the 'str.match' function to check if each value in the column follows the pattern
+mask = df['Customer ID'].str.match(pattern)
 
-    paragraphs = pattern.split(input_text)
-    headings = pattern.findall(input_text)
-
-    # Remove empty strings from the list
-    paragraphs = [para.strip() for para in paragraphs if para.strip()]
-
-    # Combine paragraphs and headings
-    result = [{'heading': heading, 'paragraph': paragraph} for heading, paragraph in zip(headings, paragraphs)]
-
-    return result
+# Identify rows that don't match the pattern
+invalid_rows = df[~mask]
