@@ -1,22 +1,12 @@
-df = pd.DataFrame(data)
+df['max_agency'] = df.iloc[:, 2:].idxmax(axis=1)
 
-# Task 1: Summing amounts for rows with the same Cust ID, SSN, rating
-df['amt'] = df.groupby(['Cust ID', 'SSN', 'rating'])['amt'].transform('sum')
-df = df.drop_duplicates(['Cust ID', 'SSN', 'rating']).reset_index(drop=True)
+# Finding the corresponding maximum value
+df['max_amount'] = df.apply(lambda row: row[row['max_agency']], axis=1)
 
-# Task 2: Create new columns with unique values in the rating column
-unique_ratings = df['rating'].unique()
-for rating in unique_ratings:
-    df[rating] = 0
+# Sorting based on the preferred hierarchy
+preferred_order = ['CRISIL', 'ICRA', 'IND', 'CARE', 'ACUITE']
+df['max_agency'] = df['max_agency'].astype(pd.CategoricalDtype(categories=preferred_order, ordered=True))
+df = df.sort_values(by=['max_agency'], ascending=False)
 
-# Task 3: Update columns based on different ratings
-for index, row in df.iterrows():
-    for rating in unique_ratings:
-        if row['rating'] == rating:
-            df.at[index, rating] = row['amt']
-
-# Task 4: Remove the 'rating' column
-df = df.drop(columns=['rating'])
-
-# Displaying the final dataframe
-print(df)
+# Keeping only the desired columns
+df = df[['Cust ID', 'SSN', 'ICRA', 'CRISIL', 'ACUITE', 'IND', 'CARE', 'max_agency', 'max_amount']]
