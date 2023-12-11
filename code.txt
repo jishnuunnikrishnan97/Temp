@@ -3,17 +3,19 @@
 rem Run extractor.py
 "C:\Users\cp9\Desktop\OCR\scripts\python.exe" "C:\Users\cp9\Desktop\OCR\Scripts\extractor.py"
 
-rem Print message and ask for user input
-echo Data from pdfs have been extracted. Edit the output file for final output creation.
-set /p editCompleted=Have you completed editing the output? (Y/N): 
+rem Print message and prompt user input
+echo Data from pdfs have been extracted. Kindly edit the output file for final output creation.
+choice /C YN /M "Have you completed editing the output? (Y/N)"
 
 rem Check user input
-if /i "%editCompleted%"=="Y" (
-    rem User input is Y, so run validation.py
-    "C:\Users\cp9\Desktop\OCR\scripts\python.exe" "C:\Users\cp9\Desktop\OCR\Scripts\validation.py"
-) else (
-    rem User input is not Y, print a message
+if errorlevel 2 (
     echo Kindly finish editing and press Y.
+    choice /C Y /M "Press Y when editing is complete."
+)
+
+rem Run validation.py if user input is Y
+if errorlevel 1 (
+    "C:\Users\cp9\Desktop\OCR\scripts\python.exe" "C:\Users\cp9\Desktop\OCR\Scripts\validation.py"
 )
 
 pause
