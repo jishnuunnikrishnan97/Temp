@@ -1,28 +1,19 @@
-import pandas as pd
-from PyPDF2 import PdfReader
+@echo off
 
-# Load data
-data = pd.read_excel("customers.xlsx")
-customer_ids = data["customer_id"]
-customer_names = data["customer_name"]
+rem Run extractor.py
+"C:\Users\cp9\Desktop\OCR\scripts\python.exe" "C:\Users\cp9\Desktop\OCR\Scripts\extractor.py"
 
-# Load PDF
-reader = PdfReader("document.pdf")
+rem Print message and ask for user input
+echo Data from pdfs have been extracted. Edit the output file for final output creation.
+set /p editCompleted=Have you completed editing the output? (Y/N): 
 
-# Extract text
-page_text = []
-for page in range(reader.getNumPages()):
-    page_text.append(reader.getPage(page).extractText())
+rem Check user input
+if /i "%editCompleted%"=="Y" (
+    rem User input is Y, so run validation.py
+    "C:\Users\cp9\Desktop\OCR\scripts\python.exe" "C:\Users\cp9\Desktop\OCR\Scripts\validation.py"
+) else (
+    rem User input is not Y, print a message
+    echo Kindly finish editing and press Y.
+)
 
-# Search and store matches
-matches = {}
-for name, customer_id in zip(customer_names, customer_ids):
-    for page_number, page in enumerate(page_text):
-        # Search using str.find or str.index
-        index = page.find(name)
-        if index != -1:
-            matches[name] = (customer_id, page_number)
-
-# Process and output matches
-# ...
-
+pause
