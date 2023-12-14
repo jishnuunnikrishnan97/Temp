@@ -9,7 +9,7 @@ def extract_images_from_pdf(pdf_path, image_folder):
         
         for img_index, img_info in enumerate(images):
             img_index += 1
-            base_image = doc.extract_image(img_info)
+            base_image = doc.extract_image(img_info[0])
             image_bytes = base_image["image"]
             
             image_filename = f"{image_folder}/page{page_number + 1}_img{img_index}.png"
