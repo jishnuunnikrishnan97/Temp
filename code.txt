@@ -1,21 +1,31 @@
-@echo off
+0
 
-rem Run extractor.py
-"C:\Users\cp9\Desktop\OCR\scripts\python.exe" "C:\Users\cp9\Desktop\OCR\Scripts\extractor.py"
+1
 
-rem Print message and prompt user input
-echo Data from pdfs have been extracted. Kindly edit the output file for final output creation.
-choice /C YN /M "Have you completed editing the output? (Y/N)"
+2
 
-rem Check user input
-if errorlevel 2 (
-    echo Kindly finish editing and press Y.
-    choice /C Y /M "Press Y when editing is complete."
-)
+Apr
 
-rem Run validation.py if user input is Y
-if errorlevel 1 (
-    "C:\Users\cp9\Desktop\OCR\scripts\python.exe" "C:\Users\cp9\Desktop\OCR\Scripts\validation.py"
-)
+0
 
-pause
+03,
+
+2023
+
+Master Circular- Disbursement of Government Pension by Agency Banks
+
+https://www.rbi.org.in/Scripts/BS_ViewMasCirculardetails.aspx? id=12477
+
+Apr
+
+1
+
+01,
+
+2023
+
+Master Circular on Conduct of Government Business by Agency
+
+https://www.rbi.org.in/Scripts/BS_ViewMasCirculardetails.aspx? id=12474
+
+Banks-Payment of Agency Commission
