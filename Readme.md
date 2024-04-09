@@ -1,3 +1,3 @@
-FIMM = df[df['Prod'].isin(FIMM_list)]
-Forex = df[df['Prod'].isin(Forex_list)]
-Derivatives = df[df['Prod'].isin(Derivatives_list)]
+sgl_index = df[df['Serial'] == 'SGL Account No.'].index[0]
+df_cleaned = df[sgl_index+1:]
+df_cleaned.reset_index(drop=True, inplace=True)
