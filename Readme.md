@@ -6,7 +6,7 @@ data = {'Difference': [pd.Timedelta(minutes=15), pd.Timedelta(minutes=45),
 df = pd.DataFrame(data)
 
 def count_occurrences(time_delta_column):
-    # Initialize counters for different time ranges
+    
     range_10_30 = 0
     range_30_60 = 0
     range_1_2_hours = 0
