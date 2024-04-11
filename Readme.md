@@ -1,5 +1,3 @@
-second_account_index = df[df['Serial'] == 'SGL Account No.'].index[1]
+result = sheet1_df.loc[sheet1_df['E'].isin(sheet2_df['A']), 'I'].sum()
 
-filtered_df = df.iloc[second_account_index:]
-
-filtered_df.reset_index(drop=True, inplace=True)
+result = sheet2_df.set_index('D').loc[B3, 'F'] if B3 in sheet2_df['D'].values else None
