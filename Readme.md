@@ -1,7 +1,5 @@
-total_face_value_index = df[df['fresh'] == 'Total Face Value'].index[0]
+position_sum = position_df.groupby('ISIN')['Quantity'].sum().reset_index()
 
-df = df.iloc[:total_face_value_index]
-
-result = df1[df1['col1'].isin(df2['col3'])]['col2'].sum()
+working_df = working_df.merge(position_sum, on='ISIN', how='left')
 
 result = sheet2_df.set_index('D').loc[B3, 'F'] if B3 in sheet2_df['D'].values else None
