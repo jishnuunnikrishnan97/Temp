@@ -1,4 +1,6 @@
-'''import zipfile
+
+```
+import zipfile
 import pandas as pd
 import os
 
@@ -27,4 +29,4 @@ merged_data = pd.concat(dfs)
 output_excel_path = 'path_to_output_excel_file.xlsx'
 merged_data.to_excel(output_excel_path, index=False)
 print("Merged data has been written to:", output_excel_path)
-'''
+```
