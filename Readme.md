@@ -1,20 +1,20 @@
 
 ```
 
-def find_files(directory):
-    # Regex pattern to match filenames with specific keywords and file extensions
-    pattern = re.compile(r'(deal\s*dump|omr).*\.(xlsx|csv|xlsb|xls)$', re.IGNORECASE)
+def find_sheet_names(filename):
+    # Load the Excel file without reading any data
+    xl = pd.ExcelFile(filename)
     
-    # List to store matching filenames
-    matching_files = []
+    # Get list of sheet names
+    sheet_names = xl.sheet_names
     
-    # Loop through each file in the directory
-    for filename in os.listdir(directory):
-        # Check if the file matches the pattern
-        if pattern.match(filename):
-            matching_files.append(filename)
+    # Define the substrings to search for in sheet names
+    search_strings = ['Sheet1', 'Dump']
     
-    return matching_files
-
+    # Filter sheet names containing any of the search strings
+    matching_sheets = [sheet for sheet in sheet_names 
+                       if any(s.lower() in sheet.lower() for s in search_strings)]
+    
+    return matching_sheets
 
 ```
