@@ -1,50 +1,40 @@
 
 ```
 
-import os
-import zipfile
 import pandas as pd
+import os
+from pathlib import Path
+import zipfile
 
 def extract_data_from_zip(zip_file_path):
-    with zipfile.ZipFile(zip_file_path, mode='r') as zip_ref:
-        matched_files = [file for file in zip_ref.namelist() if 'Matched' in file and 'Unmatched' not in file and file.endswith('.csv')]
-        
+    with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
+        # Filtering specific files within the ZIP
+        matched_files = [file for file in zip_ref.namelist() if 'Client_Trades_status_for_INRFWD' in file and file.endswith('.csv')]
         dfs = []
         for file_name in matched_files:
             with zip_ref.open(file_name) as excel_file:
                 df = pd.read_csv(excel_file)
-                df.columns = df.columns.str.replace(' ', '')
-                selected_columns = [select_memref(df), select_tradedate(df), find_common_element(col_names, df.columns)]
-                df_selected = df[selected_columns]
-                new_col_names = {df_selected.columns[0]: "Member Reference", df_selected.columns[1]: "Trade Date", df_selected.columns[2]: 'Deal Received Data and Time'}
-                df_selected = df_selected.rename(columns=new_col_names)
-                dfs.append(df_selected)
-        
-        merged_df = pd.concat(dfs)
-        return merged_df
+                selected_columns = ['Transaction Reference No', 'Reporting Date and Time']
+                dfs.append(df[selected_columns])
+        return pd.concat(dfs) if dfs else pd.DataFrame()
 
-main_path = os.path.join(os.getcwd(), 'Input')
-month_merge_dfs = []
+def process_month_data(input_dir):
+    input_path = Path(input_dir)
+    month_merge_df = pd.DataFrame()
+    for month_folder in input_path.iterdir():
+        daily_dfs = []
+        for day_folder in month_folder.iterdir():
+            if day_folder.is_dir():
+                for zip_file in day_folder.glob('*.zip'):
+                    daily_dfs.append(extract_data_from_zip(zip_file))
+        # Consolidating all day dataframes into one for the month
+        if daily_dfs:
+            month_merge_df = pd.concat([month_merge_df, pd.concat(daily_dfs)], ignore_index=True)
+    return month_merge_df
 
-for month in os.listdir(main_path):
-    month_path = os.path.join(main_path, month)
-    daily_merge_dfs = []
-    
-    for day in os.listdir(month_path):
-        day_path = os.path.join(month_path, day)
-        daily_merged_df = pd.DataFrame()
-        
-        for zip_file in os.listdir(day_path):
-            if zip_file.endswith('.zip'):
-                df = extract_data_from_zip(os.path.join(day_path, zip_file))
-                daily_merge_dfs.append(df)
-        
-        daily_merged_df = pd.concat(daily_merge_dfs)
-        month_merge_dfs.append(daily_merged_df)
-    
-month_merge_df = pd.concat(month_merge_dfs)
-output_excel_path = 'derv-input2.xlsx'
-month_merge_df.to_excel(output_excel_path, index=False)
+# Adjust the 'Input' directory path as necessary
+input_dir = os.path.join(os.getcwd(), 'Input')
+final_df = process_month_data(input_dir)
 
 
 ```
