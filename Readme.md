@@ -1,24 +1,29 @@
 
 ```
 
-import openpyxl
+import xlrd
+import pandas as pd
 
-# Load the workbook
-wb = openpyxl.load_workbook('path_to_your_file.xlsx')
+# Open the Excel file
+workbook = xlrd.open_workbook('your_file.xls')
 
-# Select a worksheet
-sheet = wb.active
+# Select the first sheet (index 0)
+sheet = workbook.sheet_by_index(0)
 
-# Read a specific cell
-print(sheet['A1'].value)
+# Extract headers (assuming they are in the first row)
+headers = [sheet.cell_value(0, col) for col in range(sheet.ncols)]
 
-# Alternatively, you can loop through rows and columns
-for row in sheet.iter_rows(min_row=1, max_row=2, min_col=1, max_col=2):
-    for cell in row:
-        print(cell.value)
+# Extract data rows
+data = []
+for row in range(1, sheet.nrows):
+    data.append([sheet.cell_value(row, col) for col in range(sheet.ncols)])
 
-# Close the workbook
-wb.close()
+# Create DataFrame
+df = pd.DataFrame(data, columns=headers)
+
+# Now you have your DataFrame ready for further analysis
+print(df)
+
 
 
 
