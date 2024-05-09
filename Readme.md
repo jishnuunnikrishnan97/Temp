@@ -1,15 +1,10 @@
 
 ```
 
-import pandas as pd
+find_ref = lambda x: df2.loc[df2['Ref'] == x, 'Ref'].iloc[0] if x in df2['Ref'].values else None
 
-# Assuming you have two dataframes: df1 and df2
-
-# Create a lambda function to check if the value exists in df1['8Digit Ref'] and return the corresponding 'MU' value
-get_mu = lambda ref: df1.loc[df1['8Digit Ref'] == ref, 'MU'].iloc[0] if ref in df1['8Digit Ref'].values else ''
-
-# Apply the lambda function to create the new column 'MU' in df2
-df2['MU'] = df2['Ref'].apply(get_mu)
+# Apply the lambda function to create the new column
+df1['MU'] = df1['8Digit Ref'].apply(find_ref)
 
 
 ```
