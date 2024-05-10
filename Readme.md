@@ -1,16 +1,15 @@
 
 ```
-import xlrd
-
-def search_value_in_excel(file_path, search_value):
-    workbook = xlrd.open_workbook(file_path)
-    sheet_names = workbook.sheet_names()
-    for sheet_name in sheet_names:
-        sheet = workbook.sheet_by_name(sheet_name)
-        for row_idx in range(sheet.nrows):
-            for col_idx in range(sheet.ncols):
-                cell_value = sheet.cell_value(row_idx, col_idx)
-                if cell_value == search_value:
-                    return sheet_name
-    return None
+def update_df1(df1, df2, search_value):
+    # Search for the value in df2['Ref']
+    match_row = df2[df2['Ref'] == search_value]
+    
+    if not match_row.empty:
+        # Get corresponding values from df2
+        cur_value = match_row['Cur'].values[0]
+        amt_value = match_row['Amt'].values[0]
+        
+        # Update df1 with the corresponding values
+        df1.loc[df1['Ref1'] == search_value, 'Cur1'] = cur_value
+        df1.loc[df1['Ref1'] == search_value, 'Amt1'] = amt_value
 ```
