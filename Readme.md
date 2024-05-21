@@ -1,19 +1,8 @@
 
 ```
-import openpyxl
-
-def search_value_in_excel(file_path, search_value):
-    workbook = openpyxl.load_workbook(file_path, data_only=True)
-    sheet_names = workbook.sheetnames
-
-    for sheet_name in sheet_names:
-        sheet = workbook[sheet_name]
-
-        for row in sheet.iter_rows(values_only=True):
-            for cell in row:
-                if cell == search_value:
-                    return sheet_name
-
-    return None
-
+def transform_ref(value):
+    part1 = value[2:5]    # MID(C2, 3, 3)
+    part2 = value[5:7]    # MID(C2, 6, 2)
+    part3 = value[7:14]   # MID(C2, 8, 7)
+    return f"{part1}-{part2}-{part3}"
 ```
