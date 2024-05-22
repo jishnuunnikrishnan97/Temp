@@ -1,8 +1,10 @@
 
 ```
-def transform_ref(value):
-    part1 = value[2:5]    # MID(C2, 3, 3)
-    part2 = value[5:7]    # MID(C2, 6, 2)
-    part3 = value[7:14]   # MID(C2, 8, 7)
-    return f"{part1}-{part2}-{part3}"
+df_fail = df1[df1['comment'] == 'fail']
+
+# Step 2: Select rows with values 'import', 'lc', 'export', 'flash' in the column 'cty'
+df_fail_cty = df_fail[df_fail['cty'].isin(['import', 'lc', 'export', 'flash'])]
+
+# Step 3: Select rows with values 0 in the columns 'loan' and 'task'
+final_df = df_fail_cty[(df_fail_cty['loan'] == 0) & (df_fail_cty['task'] == 0)]
 ```
