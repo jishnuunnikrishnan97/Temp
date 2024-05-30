@@ -1,10 +1,18 @@
 
 ```
-df_fail = df1[df1['comment'] == 'fail']
+def remove_rows_between_subtotal_and_no(df, col_name='NO', start_value='Sub Total :', end_value='NO'):
+    index_list = df.index[df[col_name] == start_value].tolist()
+    rows_to_drop = []
 
-# Step 2: Select rows with values 'import', 'lc', 'export', 'flash' in the column 'cty'
-df_fail_cty = df_fail[df_fail['cty'].isin(['import', 'lc', 'export', 'flash'])]
+    for start_index in index_list:
+        end_index = None
+        for i in range(1, 7):
+            if start_index + i < len(df) and df.iloc[start_index + i][col_name] == end_value:
+                end_index = start_index + i
+                break
+        if end_index is not None:
+            rows_to_drop.extend(range(start_index, end_index + 1))
 
-# Step 3: Select rows with values 0 in the columns 'loan' and 'task'
-final_df = df_fail_cty[(df_fail_cty['loan'] == 0) & (df_fail_cty['task'] == 0)]
+    df = df.drop(rows_to_drop).reset_index(drop=True)
+    return df
 ```
