@@ -1,18 +1,30 @@
 
 ```
-def remove_rows_between_subtotal_and_no(df, col_name='NO', start_value='Sub Total :', end_value='NO'):
-    index_list = df.index[df[col_name] == start_value].tolist()
-    rows_to_drop = []
+import pandas as pd
 
-    for start_index in index_list:
-        end_index = None
-        for i in range(1, 7):
-            if start_index + i < len(df) and df.iloc[start_index + i][col_name] == end_value:
-                end_index = start_index + i
-                break
-        if end_index is not None:
-            rows_to_drop.extend(range(start_index, end_index + 1))
+# Assuming imex is your DataFrame
 
-    df = df.drop(rows_to_drop).reset_index(drop=True)
-    return df
+# First lookup
+mid_ref1_na = imex['Lookup from SAA 1'].isna()
+temp = imex.loc[~mid_ref1_na]
+temp = temp.rename(columns={'Mid ref for Lookup 1': 'Mid ref for Lookup'})
+imex_lookup = temp[['Mid ref for Lookup', 'CCY', 'FCY']]
+
+# Second lookup
+mid_ref2_na = imex['Lookup from SAA 2'].isna()
+temp = imex.loc[~mid_ref2_na]
+temp = temp.rename(columns={'Mid ref for Lookup 2': 'Mid ref for Lookup'})
+temp = temp[['Mid ref for Lookup', 'CCY', 'FCY']]
+imex_lookup = pd.concat([imex_lookup, temp])
+
+# Third lookup
+mid_ref3_na = imex['Lookup from SAA 3'].isna()
+temp = imex.loc[~mid_ref3_na]
+temp = temp.rename(columns={'Mid ref for Lookup 3': 'Mid ref for Lookup'})
+temp = temp[['Mid ref for Lookup', 'CCY', 'FCY']]
+imex_lookup = pd.concat([imex_lookup, temp])
+
+# Display the final DataFrame
+print(imex_lookup)
+
 ```
