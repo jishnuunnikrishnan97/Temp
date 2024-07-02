@@ -1,3 +1,5 @@
+```
+
 import pandas as pd
 import re
 
@@ -16,3 +18,6 @@ def extract_numbers(reference):
 df['extracted'] = df['reference'].apply(extract_numbers)
 
 print(df)
+
+
+```
