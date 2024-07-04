@@ -1,36 +1,47 @@
 ```
 
-import pandas as pd
-from datetime import timedelta
+import os
 
-# Create the dataframe
-data = {'crdate': ['2024-05-10T11:50:15.250+08:00',
-                   '2024-05-10T11:58:38.324+08:00',
-                   '2024-05-10T11:58:55.045+08:00',
-                   '2024-05-10T13:02:29.493+08:00',
-                   '2024-05-10T12:09:27.719+08:00',
-                   '2024-05-10T12:14:00.215+08:00']}
-df1 = pd.DataFrame(data)
+path = 'c:\\input'
 
-# Split the 'crdate' column into 'Date' and 'Time' columns
-df1['Date'] = df1['crdate'].str[:10]
-df1['Time'] = df1['crdate'].str[11:19]
+msi_sent_path, ipe_path, imex_path, non_payment_path = "", "", "", ""
+checker_path, bnp_path, mt535_path, mt536_path, RDO_path = "", "", "", "", ""
 
-# Convert 'Date' and 'Time' columns to datetime
-df1['DateTime'] = pd.to_datetime(df1['Date'] + ' ' + df1['Time'])
+file_list = os.listdir(path)
 
-# Subtract 2 hours and 30 minutes to get 'Time IST'
-df1['Time IST'] = df1['DateTime'] - timedelta(hours=2, minutes=30)
+for file in file_list:
+    file_lower = file.lower()
+    
+    if 'msi' in file_lower:
+        msi_sent_path = os.path.join(path, file)
+    elif 'ipe' in file_lower:
+        ipe_path = os.path.join(path, file)
+    elif 'imex' in file_lower:
+        imex_path = os.path.join(path, file)
+    elif 'payment' in file_lower:
+        non_payment_path = os.path.join(path, file)
+    elif 'checker' in file_lower:
+        checker_path = os.path.join(path, file)
+    elif 'bnp' in file_lower:
+        bnp_path = os.path.join(path, file)
+    elif '535' in file_lower:
+        mt535_path = os.path.join(path, file)
+    elif '536' in file_lower:
+        mt536_path = os.path.join(path, file)
+    elif 'receive deliver order' in file_lower:
+        RDO_path = os.path.join(path, file)
 
-# Define the time range
-start_time = pd.Timestamp('09:00:00').time()
-end_time = pd.Timestamp('21:00:00').time()
+missing_files = {
+    "BNP file": bnp_path,
+    "MT535 file": mt535_path,
+    "MT536 file": mt536_path,
+    "Receive Deliver Order List": RDO_path
+}
 
-# Create 'B/A' column with condition
-df1['B/A'] = df1['Time IST'].apply(lambda x: 'Before/After' if x.time() < start_time or x.time() > end_time else '')
+for file_name, file_path in missing_files.items():
+    if file_path == "":
+        print(f"{file_name} missing. Some errors or discrepancies in the final output may occur!")
 
-# Display the result
-print(df1[['crdate', 'Date', 'Time', 'Time IST', 'B/A']])
 
 
 
