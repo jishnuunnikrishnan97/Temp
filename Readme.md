@@ -1,18 +1,10 @@
 ```
 
-import pandas as pd
-
-def find_matching_row(df):
+def find_row_with_elements(df, elements):
     for index, row in df.iterrows():
-        if all(row[col] == col for col in df.columns):
+        if all(element in row.values for element in elements):
             return index
     return None
-
-# Example usage:
-data = {'A': ['A', 'B', 'C'], 'B': ['B', 'B', 'B'], 'C': ['C', 'B', 'C']}
-df = pd.DataFrame(data)
-print(find_matching_row(df))  # Output: 0
-
 
 
 
