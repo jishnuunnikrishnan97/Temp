@@ -1,46 +1,26 @@
 ```
 
-import os
+import pandas as pd
 
-path = 'c:\\input'
+# Initialize an empty DataFrame
+base_ip = pd.DataFrame()
 
-msi_sent_path, ipe_path, imex_path, non_payment_path = "", "", "", ""
-checker_path, bnp_path, mt535_path, mt536_path, RDO_path = "", "", "", "", ""
+# Define a function to read files based on their extension
+def read_file(file):
+    if file.endswith((".xls", ".xlsx", ".xlsb")):
+        return pd.read_excel(file, skiprows=7)
+    elif file.endswith(".csv"):
+        return pd.read_csv(file, skiprows=7)
+    else:
+        return None
 
-file_list = os.listdir(path)
+# Iterate over the file list and concatenate DataFrames
+for file in base_part_file_list:
+    df = read_file(file)
+    if df is not None:
+        base_ip = pd.concat([base_ip, df], ignore_index=True)
 
-for file in file_list:
-    file_lower = file.lower()
-    
-    if 'msi' in file_lower:
-        msi_sent_path = os.path.join(path, file)
-    elif 'ipe' in file_lower:
-        ipe_path = os.path.join(path, file)
-    elif 'imex' in file_lower:
-        imex_path = os.path.join(path, file)
-    elif 'payment' in file_lower:
-        non_payment_path = os.path.join(path, file)
-    elif 'checker' in file_lower:
-        checker_path = os.path.join(path, file)
-    elif 'bnp' in file_lower:
-        bnp_path = os.path.join(path, file)
-    elif '535' in file_lower:
-        mt535_path = os.path.join(path, file)
-    elif '536' in file_lower:
-        mt536_path = os.path.join(path, file)
-    elif 'receive deliver order' in file_lower:
-        RDO_path = os.path.join(path, file)
-
-missing_files = {
-    "BNP file": bnp_path,
-    "MT535 file": mt535_path,
-    "MT536 file": mt536_path,
-    "Receive Deliver Order List": RDO_path
-}
-
-for file_name, file_path in missing_files.items():
-    if file_path == "":
-        print(f"{file_name} missing. Some errors or discrepancies in the final output may occur!")
+# Now base_ip contains the concatenated DataFrame
 
 
 
