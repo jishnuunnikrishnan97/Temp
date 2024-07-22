@@ -1,27 +1,41 @@
 ```
 
 import pandas as pd
+import xml.etree.ElementTree as ET
 
-# Initialize an empty DataFrame
-base_ip = pd.DataFrame()
+def read_excel_xml(file_path):
+    """
+    Reads an Excel XML file and converts it into a pandas DataFrame.
 
-# Define a function to read files based on their extension
-def read_file(file):
-    if file.endswith((".xls", ".xlsx", ".xlsb")):
-        return pd.read_excel(file, skiprows=7)
-    elif file.endswith(".csv"):
-        return pd.read_csv(file, skiprows=7)
-    else:
-        return None
+    Parameters:
+    - file_path (str): Path to the XML file.
 
-# Iterate over the file list and concatenate DataFrames
-for file in base_part_file_list:
-    df = read_file(file)
-    if df is not None:
-        base_ip = pd.concat([base_ip, df], ignore_index=True)
+    Returns:
+    - pd.DataFrame: DataFrame containing the data from the XML file.
+    """
+    # Parse the XML content
+    tree = ET.parse(file_path)
+    root = tree.getroot()
 
-# Now base_ip contains the concatenated DataFrame
+    # Namespace dictionary to handle the default namespace
+    namespaces = {'default': 'urn:schemas-microsoft-com:office:spreadsheet'}
 
+    # Extract data
+    data = []
+    for row in root.findall('.//default:Row', namespaces):
+        row_data = []
+        for cell in row.findall('.//default:Data', namespaces):
+            row_data.append(cell.text)
+        data.append(row_data)
+
+    # Create DataFrame
+    df = pd.DataFrame(data)
+
+    return df
+
+# Example usage:
+# df = read_excel_xml('your_file.xml')
+# print(df)
 
 
 
