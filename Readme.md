@@ -1,11 +1,10 @@
 ```
 
-def find_row_with_elements(df, elements):
-    for index, row in df.iterrows():
-        if all(element in row.values for element in elements):
-            return index
+def vlookup(id_value, lookup_df):
+    match = lookup_df[lookup_df['ref'] == id_value]
+    if not match.empty:
+        return match['FCY'].values[0]
     return None
-
 
 
 ```
