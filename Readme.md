@@ -1,30 +1,19 @@
 ```
 
-import time
+def seconds_to_hms(seconds):
+  """Converts seconds to hours, minutes, and seconds."""
 
-start_time = time.perf_counter()  # Get the start time
+  hours = seconds // 3600
+  seconds %= 3600
+  minutes = seconds // 60
+  seconds %= 60
 
-# Your code block to be timed
-for i in range(10000):
-    pass
+  return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
 
-end_time = time.perf_counter()  # Get the end time
-
-execution_time = end_time - start_time
-print(f"Execution time: {execution_time:.6f} seconds")
-
-
-from win10toast import ToastNotifier
-
-# Create a ToastNotifier object
-toaster = ToastNotifier()
-
-# Notification title and message
-title = "Python Script Notification"
-message = "Your script has finished running!"
-
-# Show the notification
-toaster.show_toast(title, message)
+# Example usage:
+total_seconds = 7187
+result = seconds_to_hms(total_seconds)
+print(result)  # Output: 01:59:47
 
 
 
