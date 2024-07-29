@@ -1,23 +1,28 @@
 ```
 import pandas as pd
 
-def filter_df_by_column_prefix(df, column_name, search_strings):
- 
+# Sample function to search for a string in a column and populate a new column
+def search_and_populate(row, search_string, column_name):
+    # Check if the search string is in the specified column
+    if search_string.lower() in str(row[column_name]).lower():
+        return search_string
+    else:
+        return None  # or "" if you prefer empty strings
 
-  if not isinstance(search_strings, list):
-    search_strings = [search_strings]
+# Example usage
+data = {
+    'Text': ['This is a test', 'Another example', 'Searching for words', 'No match here'],
+}
+df = pd.DataFrame(data)
 
-  
-  masks = [df[column_name].str.startswith(string) for string in search_strings]
+# Define the search string
+search_string = 'test'
 
- 
-  combined_mask = masks[0]
-  for mask in masks[1:]:
-    combined_mask |= mask
+# Apply the function to the DataFrame
+df['Search_Result'] = df.apply(search_and_populate, search_string=search_string, column_name='Text', axis=1)
 
-  
-  filtered_df = df[combined_mask]
-  return filtered_df
+# Display the DataFrame
+print(df)
 
 
 
