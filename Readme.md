@@ -1,29 +1,48 @@
 ```
-import re
-
 def split_string(string):
-  """Splits a string into a list of lists based on the specified criteria.
+    """Splits a string into a list of lists based on specified criteria.
 
-  Args:
-    string: The input string.
+    Args:
+        string: The input string.
 
-  Returns:
-    A list of lists containing the split substrings.
-  """
+    Returns:
+        A list of lists, where each inner list contains a portion of the input string
+        that starts with '*Transaction start*' and ends with 'Transaction end'.
+    """
 
-  # Find all occurrences of '*Transaction*'
-  matches = re.findall(r'\*Transaction\*.*?\*Transaction\*', string)
+    start_marker = "*Transaction start*"
+    end_marker = "Transaction end"
 
-  # Extract the substrings between the matches, excluding the '*Transaction*' parts
-  tsf = [match[13:-13] for match in matches]
+    tsf = []
+    current_list = []
 
-  return tsf
+    for line in string.splitlines():
+        if start_marker in line:
+            current_list.append(line)
+        elif end_marker in line:
+            current_list.append(line)
+            tsf.append(current_list)
+            current_list = []
+        else:
+            current_list.append(line)
+
+    return tsf
 
 # Example usage:
-bare = "*Transaction*This is a sample transaction*Transaction*Another transaction*Transaction*"
-tsf = split_string(bare)
-print(tsf)
+bare_string = """
+*Transaction start*
+Line 1 of transaction 1
+Line 2 of transaction 1
+Transaction end
 
+*Transaction start*
+Line 1 of transaction 2
+Line 2 of transaction 2
+Transaction end
+"""
+
+tsf_result = split_string(bare_string)
+print(tsf_result)
 
 
 ```
