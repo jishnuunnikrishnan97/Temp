@@ -1,30 +1,28 @@
 ```
-def read_text_file_contents(file_path):
-  """Reads a text file and returns its contents as a single string.
+import re
+
+def split_string(string):
+  """Splits a string into a list of lists based on the specified criteria.
 
   Args:
-    file_path: The path to the text file.
+    string: The input string.
 
   Returns:
-    A string containing the contents of the text file.
+    A list of lists containing the split substrings.
   """
 
-  try:
-    with open(file_path, 'r') as file:
-      contents = file.read()
-      return contents
-  except FileNotFoundError:
-    print(f"File not found: {file_path}")
-    return None
+  # Find all occurrences of '*Transaction*'
+  matches = re.findall(r'\*Transaction\*.*?\*Transaction\*', string)
+
+  # Extract the substrings between the matches, excluding the '*Transaction*' parts
+  tsf = [match[13:-13] for match in matches]
+
+  return tsf
 
 # Example usage:
-file_path = "example.txt"  # Replace with the actual path to your file
-content = read_text_file_contents(file_path)
-
-if content:
-  print(content)
-else:
-  print("Failed to read the file.")
+bare = "*Transaction*This is a sample transaction*Transaction*Another transaction*Transaction*"
+tsf = split_string(bare)
+print(tsf)
 
 
 
