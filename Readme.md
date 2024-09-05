@@ -1,24 +1,21 @@
 ```
-import pandas as pd
-import re
+def extract_info(data):
+  card_numbers = []
+  pin_entered_times = []
+  response_received_times = []
 
-def remove_special_chars(df, column_name):
-    """Removes specified special characters from a DataFrame column.
+  for transaction in data:
+    for line in transaction:
+      if "CARD:" in line:
+        card_numbers.append(line.split(":")[1].strip())
+      elif "PIN ENTERED" in line:
+        pin_entered_times.append(line.split(" ")[1])
+      elif "RESPONSE RECEIVED" in line:
+        response_received_times.append(line.split(" ")[1])
 
-    Args:
-        df: The Pandas DataFrame.
-        column_name: The name of the column to modify.
-
-    Returns:
-        The modified DataFrame.
-    """
-
-    # Regular expression pattern to match the special characters
-    pattern = r'[-\(\)\*\,]'
-
-    # Convert the column to string and remove the special characters using regex
-    df[column_name] = df[column_name].astype(str).str.replace(pattern, '', regex=True)
-
-    return df
-
+  return {
+    "CARD": card_numbers,
+    "PIN ENTERED": pin_entered_times,
+    "RESPONSE RECEIVED": response_received_times
+  }
 ```
