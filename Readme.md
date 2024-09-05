@@ -1,48 +1,24 @@
 ```
-def split_string(string):
-    """Splits a string into a list of lists based on specified criteria.
+import pandas as pd
+import re
+
+def remove_special_chars(df, column_name):
+    """Removes specified special characters from a DataFrame column.
 
     Args:
-        string: The input string.
+        df: The Pandas DataFrame.
+        column_name: The name of the column to modify.
 
     Returns:
-        A list of lists, where each inner list contains a portion of the input string
-        that starts with '*Transaction start*' and ends with 'Transaction end'.
+        The modified DataFrame.
     """
 
-    start_marker = "*Transaction start*"
-    end_marker = "Transaction end"
+    # Regular expression pattern to match the special characters
+    pattern = r'[-\(\)\*\,]'
 
-    tsf = []
-    current_list = []
+    # Convert the column to string and remove the special characters using regex
+    df[column_name] = df[column_name].astype(str).str.replace(pattern, '', regex=True)
 
-    for line in string.splitlines():
-        if start_marker in line:
-            current_list.append(line)
-        elif end_marker in line:
-            current_list.append(line)
-            tsf.append(current_list)
-            current_list = []
-        else:
-            current_list.append(line)
-
-    return tsf
-
-# Example usage:
-bare_string = """
-*Transaction start*
-Line 1 of transaction 1
-Line 2 of transaction 1
-Transaction end
-
-*Transaction start*
-Line 1 of transaction 2
-Line 2 of transaction 2
-Transaction end
-"""
-
-tsf_result = split_string(bare_string)
-print(tsf_result)
-
+    return df
 
 ```
