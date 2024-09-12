@@ -4,13 +4,13 @@ from datetime import datetime
 
 # Sample DataFrame
 dicto = pd.DataFrame({
-    'PIN ENTERED': ['12:34:55', '13:45:22', None, '14:23:05'],
-    'RESPONSE RECEIVED': ['12:35:30', '13:45:55', '14:30:10', None]
+    'PIN ENTERED': ['12:34:55', '13:45:22', '', '14:23:05'],
+    'RESPONSE RECEIVED': ['12:35:30', '13:45:55', '14:30:10', '']
 })
 
 # Function to convert strings to timedelta
 def convert_to_timedelta(time_str):
-    if pd.isnull(time_str):
+    if pd.isnull(time_str) or time_str == '':
         return None
     return datetime.strptime(time_str, '%H:%M:%S') - datetime(1900, 1, 1)
 
@@ -35,6 +35,7 @@ dicto = dicto.drop(columns=['PIN_ENTERED_TIME', 'RESPONSE_RECEIVED_TIME', 'DIFFE
 
 # Display the updated DataFrame
 print(dicto)
+
 
 
 ```
