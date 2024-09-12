@@ -1,16 +1,14 @@
 ```
-def clean_data(data):
-    keyword = 'RESPONSE RECEIVED'
-    cleaned_data = []
+import pandas as pd
 
-    for sublist in data:
-        new_sublist = []
-        for item in sublist:
-            new_sublist.append(item)
-            if keyword in item:
-                break
-        cleaned_data.append(new_sublist)
+# Assuming your DataFrame is named 'df'
+df['Difference'] = df['Exit'] - df['Enter']
 
-    return cleaned_data
+# Convert the time delta to minutes and seconds
+df['Difference'] = df['Difference'].dt.total_seconds() // 60
+df['Difference'] = df['Difference'].apply(lambda x: f"{x:02d}:{(x % 60):02d}")
+
+print(df)
+
 
 ```
