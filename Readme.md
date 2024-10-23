@@ -1,44 +1,30 @@
 ```
-import pandas as pd
-from datetime import datetime
+import re
 
-# Sample DataFrame
-dicto = pd.DataFrame({
-    'PIN ENTERED': ['12:34:55', '13:45:22', '', '14:23:05'],
-    'RESPONSE RECEIVED': ['12:35:30', '13:45:55', '14:30:10', '']
-})
+def extract_strings_from_rpt(file_path):
+    """Extracts strings from an RPT file.
 
-# Function to convert strings to timedelta
-def convert_to_timedelta(time_str):
-    if pd.isnull(time_str) or time_str == '':
-        return None
-    return datetime.strptime(time_str, '%H:%M:%S') - datetime(1900, 1, 1)
+    Args:
+        file_path (str): The path to the RPT file.
 
-# Apply the function to both columns
-dicto['PIN_ENTERED_TIME'] = dicto['PIN ENTERED'].apply(convert_to_timedelta)
-dicto['RESPONSE_RECEIVED_TIME'] = dicto['RESPONSE RECEIVED'].apply(convert_to_timedelta)
+    Returns:
+        list: A list of extracted strings.
+    """
 
-# Calculate the difference
-dicto['DIFFERENCE'] = dicto.apply(
-    lambda row: (row['RESPONSE_RECEIVED_TIME'] - row['PIN_ENTERED_TIME']).total_seconds() 
-    if pd.notnull(row['PIN_ENTERED_TIME']) and pd.notnull(row['RESPONSE_RECEIVED_TIME']) 
-    else None, axis=1
-)
+    strings = []
 
-# Convert the difference into MM:SS format
-dicto['DIFFERENCE_MM_SS'] = dicto['DIFFERENCE'].apply(
-    lambda x: f"{int(x // 60):02}:{int(x % 60):02}" if pd.notnull(x) else None
-)
+    with open(file_path, 'r') as file:
+        for line in file:
+            # Handle potential encoding issues by using `decode('utf-8', errors='ignore')`
+            line = line.decode('utf-8', errors='ignore')
 
-# Add 'Remark' column based on condition
-dicto['Remark'] = dicto['DIFFERENCE'].apply(
-    lambda x: 'Pass' if pd.notnull(x) and x <= 20 else 'Fail' if pd.notnull(x) else None
-)
+            # Remove non-printable characters and control characters
+            line = re.sub(r'[^\x20-\x7E]', '', line)
 
-# Drop the extra columns (optional)
-dicto = dicto.drop(columns=['PIN_ENTERED_TIME', 'RESPONSE_RECEIVED_TIME', 'DIFFERENCE'])
+            # Extract strings using regular expressions (adjust pattern if needed)
+            string_matches = re.findall(r'[^ \t\n]+', line)
+            strings.extend(string_matches)
 
-# Display the updated DataFrame
-print(dicto)
+    return strings
 
 ```
