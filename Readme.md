@@ -1,5 +1,7 @@
 ```
 
+Claude
+
 def extract_log_data(data_list):
     """
     Extracts specific fields from a list of log strings and formats them into a dictionary
@@ -73,5 +75,59 @@ def extract_log_data(data_list):
 # # To validate the results:
 # for key, values in result_dict.items():
 #     print(f"{key}: {values}")
+
+
+
+GPT
+
+import re
+
+def extract_data(dataList):
+    # Initialize the dictionary to store the extracted data
+    output = {
+        'USER ID': [],
+        'DEPARTMENT': [],
+        'DEPARTMENT ID': [],
+        'FUNCTION': [],
+        'DATE': [],
+        'TELEPHONE - OFFICE': []
+    }
+
+    # Iterate over each string in the dataList
+    for data in dataList:
+        # Extract the required fields using regular expressions
+        date_match = re.search(r'DATE:\s*(.*?)\s*TIME:', data)
+        function_match = re.search(r'FUNCTION:\s*(.*?)\s*DEPARTMENT:', data)
+        department_match = re.search(r'DEPARTMENT:\s*(.*?)\s*USER:', data)
+        department_id_match = re.search(r'DEPARTMENT ID\s*(.*?)\n', data)
+        user_id_match = re.search(r'USER ID\s*(.*?)\n', data)
+        telephone_office_match = re.search(r'TELEPHONE - OFFICE\s*(.*?)\n', data)
+
+        # Append the extracted data to the output dictionary
+        if date_match:
+            output['DATE'].append(date_match.group(1).strip())
+        if function_match:
+            output['FUNCTION'].append(function_match.group(1).strip())
+        if department_match:
+            output['DEPARTMENT'].append(department_match.group(1).strip())
+        if department_id_match:
+            output['DEPARTMENT ID'].append(department_id_match.group(1).strip())
+        if user_id_match:
+            output['USER ID'].append(user_id_match.group(1).strip())
+        if telephone_office_match:
+            output['TELEPHONE - OFFICE'].append(telephone_office_match.group(1).strip())
+
+    return output
+
+# Example usage
+dataList = [
+    "\n DATE: 24/04/24 TIME: 19:17:16 SEGMENT: IXQDBATH FUNCTION: DELETE DEPARTMENT: 00811 USER: CNIDM02 TERMINAL: V44N FILE: STATIC DAT\n LOG ROOT KEY :\n-----------------------------------------------------------------------------------------\n ATH-ENTITY                   002\n DEPARTMENT ID                   00161\n USER ID                   BBAWYMA\n SECTION                   OR\n NAME - ENGLISH                   Mahata, Pranay\n NAME - LOCAL                   Mahata, Pranay\n PASSWORD                   ******\n TELEPHONE - OFFICE                   TODEB001\n EFFECTIVE DATE                   2023/03/08\n EXPIRY DATE                   2069/12/31\n IMP L/C (DEPT AUTH) 3\n IMP S/G (DEPT AUTH) 3\n IMP COL (DEPT AUTH) 3\n"
+]
+
+# Extracted data
+result = extract_data(dataList)
+print(result)
+
+
 
 ```
