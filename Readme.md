@@ -1,3 +1,5 @@
+```
+
 def extract_log_data(data_list):
     """
     Extracts specific fields from a list of log strings and formats them into a dictionary
@@ -71,3 +73,5 @@ def extract_log_data(data_list):
 # # To validate the results:
 # for key, values in result_dict.items():
 #     print(f"{key}: {values}")
+
+```
