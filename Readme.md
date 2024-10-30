@@ -128,6 +128,39 @@ dataList = [
 result = extract_data(dataList)
 print(result)
 
+_______________________
+
+import pandas as pd
+import re
+
+# Step 1: Load Excel file
+# Replace 'file_path.xlsx' with the actual file path of your Excel file.
+df = pd.read_excel('file_path.xlsx')
+
+# Step 2: Define a function to extract IMEXID and UserGroup values from the XML string
+def extract_values(order_details):
+    # Define patterns to find the values for IMEXID and UserGroup
+    imexid_pattern = r'<Key>IMEXID</Key>\s*<Value>(.*?)</Value>'
+    usergroup_pattern = r'<Key>UserGroup</Key>\s*<Value>(.*?)</Value>'
+    
+    # Use regex to search for the values in the string
+    imexid_match = re.search(imexid_pattern, order_details)
+    usergroup_match = re.search(usergroup_pattern, order_details)
+    
+    # Extract values if found, otherwise return None
+    imexid = imexid_match.group(1) if imexid_match else None
+    usergroup = usergroup_match.group(1) if usergroup_match else None
+    
+    return imexid, usergroup
+
+# Step 3: Apply the function to the 'Order Details' column and create new columns
+df[['IMEXID', 'User Group']] = df['Order Details'].apply(lambda x: pd.Series(extract_values(x)))
+
+# Display the DataFrame to verify the results
+print(df)
+
+# Step 4: (Optional) Save the DataFrame back to Excel if needed
+df.to_excel('output_file.xlsx', index=False)
 
 
 ```
