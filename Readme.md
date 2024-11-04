@@ -163,4 +163,22 @@ print(df)
 df.to_excel('output_file.xlsx', index=False)
 
 
+---------------------
+
+import pandas as pd
+
+def find_sheets_with_txn(file_path):
+    # Load the Excel file to get sheet names
+    xls = pd.ExcelFile(file_path)
+    
+    # Filter sheet names containing 'txn' (case-insensitive)
+    txn_sheets = [sheet for sheet in xls.sheet_names if 'txn' in sheet.lower()]
+    
+    return txn_sheets
+
+# Example usage:
+# file_path = "path/to/your/excel_file.xlsx"
+# print(find_sheets_with_txn(file_path))
+
+
 ```
