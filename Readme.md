@@ -180,5 +180,56 @@ def find_sheets_with_txn(file_path):
 # file_path = "path/to/your/excel_file.xlsx"
 # print(find_sheets_with_txn(file_path))
 
+------------------------
+import pandas as pd
+
+# Sample data for df1 and df2
+data1 = {
+    'CSID': [1, 2, 3],
+    'Approval Date': ['2023-01-01', '2023-01-02', '2023-01-03'],
+    'Acess Role_ID': [101, 102, 103],
+    'User Group': ['GroupA', 'GroupB', 'GroupC'],
+    'Action': ['Read', 'Write', 'Execute']
+}
+df1 = pd.DataFrame(data1)
+
+data2 = {
+    'PTID': [1, 2, 3],
+    'Date': ['2023-01-01', '2023-01-02', '2023-01-04'],
+    'Department ID': [101, 105, 103],
+    'Telephone': ['GroupA', 'GroupB', 'GroupD'],
+    'Function': ['read', 'write', 'delete']
+}
+df2 = pd.DataFrame(data2)
+
+# Step 1: Merge df1 and df2 on 'CSID' and 'PTID'
+merged_df = pd.merge(df1, df2, left_on='CSID', right_on='PTID', how='left', suffixes=('', '_df2'))
+
+# Step 2: Define matching conditions
+def match_columns(row):
+    matched_columns = []
+
+    # Checking conditions and appending matched columns
+    if row['Approval Date'] == row['Date']:
+        matched_columns.append('Date')
+    if row['Acess Role_ID'] == row['Department ID']:
+        matched_columns.append('Department ID')
+    if row['User Group'] == row['Telephone']:
+        matched_columns.append('Telephone')
+    if row['Action'].lower() == row['Function']:
+        matched_columns.append('Function')
+    
+    # If any matched columns are found, return them; else return None
+    return ', '.join(matched_columns) if matched_columns else None
+
+# Apply matching function to find matches and populate 'Matched Columns' and 'RPT remark'
+merged_df['Matched Columns'] = merged_df.apply(match_columns, axis=1)
+merged_df['RPT remark'] = merged_df['Matched Columns'].apply(lambda x: 'Match Found' if x else None)
+
+# Select only required columns for final df1 with the new columns
+df1_final = merged_df[['CSID', 'Approval Date', 'Acess Role_ID', 'User Group', 'Action', 'RPT remark', 'Matched Columns']]
+print(df1_final)
+
+
 
 ```
