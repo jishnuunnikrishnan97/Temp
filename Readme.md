@@ -230,6 +230,56 @@ merged_df['RPT remark'] = merged_df['Matched Columns'].apply(lambda x: 'Match Fo
 df1_final = merged_df[['CSID', 'Approval Date', 'Acess Role_ID', 'User Group', 'Action', 'RPT remark', 'Matched Columns']]
 print(df1_final)
 
+-------------------------------------------
+
+
+import pandas as pd
+
+# Sample data for df1 and df2 for demonstration (replace with your actual data)
+df1 = pd.DataFrame({
+    'CSID': [1, 2, 3, 4],
+    'Action': ['Delete', 'Create', 'Delete', 'Create'],
+    'Date': ['2023-01-01', '2023-01-02', '2023-01-01', '2023-01-02']
+})
+
+df2 = pd.DataFrame({
+    'PTID': [1, 1, 2, 3, 3, 3],
+    'Action_Type': ['REMOVE USER', 'REMOVE USER', 'CREATE USER', 'CREATE USER', 'CREATE USER', 'CREATE USER'],
+    'Date': ['2023-01-01', '2023-01-01', '2023-01-02', '2023-01-02', '2023-01-02', '2023-01-02']
+})
+
+# Initialize the Remarks column with empty strings or 'Query' by default
+df1['Remarks'] = ''
+
+# Convert dates to datetime for accurate comparison
+df1['Date'] = pd.to_datetime(df1['Date'])
+df2['Date'] = pd.to_datetime(df2['Date'])
+
+# Condition 1: Check if Action is 'Delete' in df1 and matches with 'REMOVE USER' in df2 along with matching dates
+for i, row in df1.iterrows():
+    csid = row['CSID']
+    action = row['Action']
+    date = row['Date']
+    
+    # Check if CSID is present in df2's PTID
+    if csid not in df2['PTID'].values:
+        df1.at[i, 'Remarks'] = 'Query'
+        continue
+    
+    if action == 'Delete':
+        # Find matching rows in df2 based on PTID, Action_Type, and Date
+        condition = (df2['PTID'] == csid) & (df2['Action_Type'] == 'REMOVE USER') & (df2['Date'] == date)
+        if not df2[condition].any().any():  # If no matching rows are found, set 'Query'
+            df1.at[i, 'Remarks'] = 'Query'
+    
+    elif action == 'Create':
+        # Check if there are 3 or more occurrences of the same PTID with matching date in df2
+        create_condition = (df2['PTID'] == csid) & (df2['Date'] == date)
+        if df2[create_condition].shape[0] < 3:  # If less than 3 matches are found, set 'Query'
+            df1.at[i, 'Remarks'] = 'Query'
+
+# Display the final result with Remarks column populated
+print(df1)
 
 
 ```
