@@ -314,4 +314,22 @@ df = shift_row_data_left(df)
 print(df)
 
 
+-------------------------
+
+import pandas as pd
+import numpy as np
+
+# Merge the two DataFrames
+merged_df = pd.merge(ipe_xl, main_df, left_on='1Bank ID', right_on='USERID', how='left')
+
+# Calculate the time difference
+merged_df['time_diff'] = (pd.to_datetime(merged_df['Created Date'] + ' ' + merged_df['Created Time']) -
+                         pd.to_datetime(merged_df['Approval Date'] + ' ' + merged_df['Approval Time'])).dt.total_seconds().abs()
+
+# Populate the 'Result' column
+merged_df['Result'] = np.where((merged_df['time_diff'] <= 10) & (merged_df['1Bank ID'].notnull()), 'Match', 'Application not found in UAMS')
+
+# Display the result
+print(merged_df)
+
 ```
