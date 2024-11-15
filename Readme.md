@@ -281,5 +281,37 @@ for i, row in df1.iterrows():
 # Display the final result with Remarks column populated
 print(df1)
 
+--------------------
+
+import pandas as pd
+
+# Sample DataFrame
+data = {
+    'Col1': ['A', 'B', 'C', 'D'],
+    'Action': ['INSERT', 'RANDOM', 'DELETE', 'UPDATE'],
+    'Col3': ['X1', 'Y1', 'Z1', 'W1'],
+    'Col4': ['X2', 'Y2', 'Z2', 'W2'],
+}
+
+df = pd.DataFrame(data)
+
+# Define the function to shift rows
+def shift_row_data_left(df):
+    # Iterate through the DataFrame
+    for index, row in df.iterrows():
+        if row['Action'] not in ['INSERT', 'UPDATE', 'DELETE']:
+            # Shift row data by one column to the left
+            shifted_row = row.iloc[1:].values  # Exclude the first column
+            shifted_row = list(shifted_row) + [None]  # Add None to fill the last column
+            # Update the first column with concatenated data
+            df.at[index, 'Col1'] = f"{row['Col1']} {shifted_row[0]}"
+            # Update the rest of the row with shifted data
+            df.iloc[index, 1:] = shifted_row
+    return df
+
+# Apply the function
+df = shift_row_data_left(df)
+print(df)
+
 
 ```
