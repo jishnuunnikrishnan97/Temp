@@ -317,22 +317,52 @@ print(df)
 -------------------------
 
 import pandas as pd
-import numpy as np
+from datetime import datetime, timedelta
 
-# Merge the two DataFrames
-merged_df = pd.merge(ipe_xl, main_df, left_on='1Bank ID', right_on='USERID', how='left')
+# Sample DataFrames
+data_ipe = {
+    '1Bank ID': [101, 102, 103],
+    'Approval Date': ['2024-11-15', '2024-11-14', '2024-11-13'],
+    'Approval Time': ['12:00:05', '14:30:10', '09:15:25']
+}
 
-# Parse the date and time columns
-merged_df['Approval DateTime'] = pd.to_datetime(merged_df['Approval Date'] + ' ' + merged_df['Approval Time'])
-merged_df['Created DateTime'] = pd.to_datetime(merged_df['Created Date'] + ' ' + merged_df['Created Time'])
+data_main = {
+    'USERID': [201, 102, 103],
+    'Created Date': ['2024-11-15', '2024-11-14', '2024-11-13'],
+    'Created Time': ['12:00:10', '14:30:05', '09:15:15']
+}
 
-# Calculate the time difference
-merged_df['time_diff'] = (merged_df['Created DateTime'] - merged_df['Approval DateTime']).dt.total_seconds().abs()
+ipe_xl = pd.DataFrame(data_ipe)
+main_df = pd.DataFrame(data_main)
 
-# Populate the 'Result' column
-merged_df['Result'] = np.where((merged_df['time_diff'] <= 10) & (merged_df['1Bank ID'].notnull()), 'Match', 'Application not found in UAMS')
+# Convert date and time columns to datetime
+ipe_xl['Approval DateTime'] = pd.to_datetime(ipe_xl['Approval Date'] + ' ' + ipe_xl['Approval Time'])
+main_df['Created DateTime'] = pd.to_datetime(main_df['Created Date'] + ' ' + main_df['Created Time'])
 
-# Display the result
-print(merged_df)
+# Function to check matching conditions
+def match_rows(row):
+    bank_id = row['1Bank ID']
+    approval_datetime = row['Approval DateTime']
+    
+    # Filter main_df for matching USERID
+    filtered_main = main_df[main_df['USERID'] == bank_id]
+    
+    if not filtered_main.empty:
+        # Compare datetime differences
+        for _, main_row in filtered_main.iterrows():
+            time_diff = abs((approval_datetime - main_row['Created DateTime']).total_seconds())
+            if time_diff <= 10:
+                return None  # Match found, return nothing
+    return 'Application not found in UAMS'  # No match found
+
+# Apply function to ipe_xl
+ipe_xl['Match Status'] = ipe_xl.apply(match_rows, axis=1)
+
+# Drop temporary column if needed
+ipe_xl.drop(columns=['Approval DateTime'], inplace=True)
+
+# Display result
+print(ipe_xl)
+
 
 ```
