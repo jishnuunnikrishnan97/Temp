@@ -414,5 +414,114 @@ def process_dataframes(fin_xl, main_df):
 # Example usage:
 # processed_fin_xl, processed_main_df = process_dataframes(fin_xl, main_df)
 
+-------------------
+
+import pandas as pd
+import numpy as np
+from datetime import timedelta
+
+def check_time_match(time1, time2, threshold_seconds=60):
+    """
+    Check if two datetime values are within the specified threshold.
+    """
+    if pd.isna(time1) or pd.isna(time2):
+        return False
+    return abs((time1 - time2).total_seconds()) <= threshold_seconds
+
+def process_create_action(row, fin_xl):
+    """
+    Process rows where Action is 'Create'.
+    """
+    # Find matching workclass rows
+    matching_rows = fin_xl[fin_xl['workclass'] == row['Workclass']]
+    
+    if matching_rows.empty:
+        return 'Query'
+    
+    # Case 1a: operation is 'A'
+    a_rows = matching_rows[matching_rows['operation'] == 'A']
+    if not a_rows.empty:
+        for _, fin_row in a_rows.iterrows():
+            if check_time_match(row['Indian Time'], fin_row['rcre_time']):
+                return 'Pass'
+    
+    # Case 1b: operation is 'M'
+    m_rows = matching_rows[matching_rows['operation'] == 'M']
+    if not m_rows.empty:
+        for _, m_row in m_rows.iterrows():
+            # Find corresponding 'U' row for same userid with null values
+            u_rows = fin_xl[
+                (fin_xl['userid'] == m_row['userid']) &
+                (fin_xl['operation'] == 'U') &
+                (fin_xl[['solid', 'workclass', 'empid']].isna().all(axis=1))
+            ]
+            
+            if not u_rows.empty:
+                # Check if the M row has non-null values and time matches
+                if not pd.isna(m_row[['solid', 'workclass', 'empid']]).any():
+                    if check_time_match(row['Indian Time'], m_row['rcre_time']):
+                        return 'Pass'
+    
+    return 'Query'
+
+def process_modify_action(row, fin_xl):
+    """
+    Process rows where Action is 'Modify'.
+    """
+    matching_rows = fin_xl[
+        (fin_xl['workclass'] == row['Workclass']) &
+        (fin_xl['operation'] == 'M')
+    ]
+    
+    if matching_rows.empty:
+        return 'Query'
+    
+    for _, fin_row in matching_rows.iterrows():
+        if check_time_match(row['Indian Time'], fin_row['rcre_time']):
+            return 'Pass'
+    
+    return 'Query'
+
+def process_delete_action(row, fin_xl):
+    """
+    Process rows where Action is 'Delete'.
+    """
+    matching_rows = fin_xl[
+        (fin_xl['workclass'] == row['Workclass']) &
+        (fin_xl['operation'] == 'D')
+    ]
+    
+    if matching_rows.empty:
+        return 'Query'
+    
+    for _, fin_row in matching_rows.iterrows():
+        if check_time_match(row['Indian Time'], fin_row['rcre_time']):
+            return 'Pass'
+    
+    return 'Query'
+
+def match_dataframes(main_df, fin_xl):
+    """
+    Main function to process all rows and create the Comment column.
+    """
+    # Create a copy of main_df to avoid modifying the original
+    main_df = main_df.copy()
+    
+    # Initialize Comment column
+    main_df['Comment'] = 'Query'
+    
+    # Process each row based on Action
+    for idx, row in main_df.iterrows():
+        if row['Action'] == 'Create':
+            main_df.at[idx, 'Comment'] = process_create_action(row, fin_xl)
+        elif row['Action'] == 'Modify':
+            main_df.at[idx, 'Comment'] = process_modify_action(row, fin_xl)
+        elif row['Action'] == 'Delete':
+            main_df.at[idx, 'Comment'] = process_delete_action(row, fin_xl)
+    
+    return main_df
+
+# Example usage:
+# result_df = match_dataframes(main_df, fin_xl)
 
 ```
