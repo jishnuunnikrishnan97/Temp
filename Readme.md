@@ -525,107 +525,47 @@ def match_dataframes(main_df, fin_xl):
 # result_df = match_dataframes(main_df, fin_xl)
 
 --------------------
-import pandas as pd
-import numpy as np
-from datetime import datetime, timedelta
+def match_rows(row):
+    action = row['Action']
+    workclass = str(int(row['Workclass'])).zfill(3)
+    bank_id = row['1Bank ID']
+    indian_time = row['Indian Time']
+    
+    # Filter matching rows in fin_xl
+    matches = fin_xl[(fin_xl['workclass'] == workclass) & (fin_xl['1BankID'] == bank_id)]
+    
+    if action == 'Create':
+        if not matches.empty:
+            create_matches = matches[matches['operation'] == 'A']
+            if not create_matches.empty:
+                for _, match_row in create_matches.iterrows():
+                    # Match Indian Time with threshold of 60 seconds
+                    if abs((indian_time - pd.to_datetime(match_row['rcre_time'])).total_seconds()) <= 60:
+                        return 'Pass'
+    elif action == 'Modify':
+        if not matches.empty:
+            modify_matches = matches[matches['operation'] == 'M']
+            if not modify_matches.empty:
+                for _, match_row in modify_matches.iterrows():
+                    # Match Indian Time with threshold of 60 seconds
+                    if abs((indian_time - pd.to_datetime(match_row['rcre_time'])).total_seconds()) <= 60:
+                        return 'Pass'
+    elif action == 'Delete':
+        if not matches.empty:
+            delete_matches = matches[matches['operation'] == 'D']
+            if not delete_matches.empty:
+                for _, match_row in delete_matches.iterrows():
+                    # Match Indian Time with threshold of 60 seconds
+                    if abs((indian_time - pd.to_datetime(match_row['rcre_time'])).total_seconds()) <= 60:
+                        return 'Pass'
+    
+    return 'Query'
 
-# Convert columns to required formats
-def preprocess_dataframes(fin_xl, main_df):
-    # Process fin_xl['sol id']
-    fin_xl['sol id'] = fin_xl['sol id'].astype(str).str.split('.').str[0].str.zfill(3)
-    
-    # Process fin_xl['workclass']
-    fin_xl['workclass'] = fin_xl['workclass'].astype(str).str.split('.').str[0].str.zfill(3)
-    
-    # Process main_df['Indian Time']
-    if main_df['Indian Time'].dtype == 'object':
-        main_df['Indian Time'] = main_df['Indian Time'].str.strip()
-        main_df['Indian Time'] = pd.to_datetime(main_df['Indian Time'], errors='coerce')
-    
-    # Process fin_xl['Approval Date']
-    if fin_xl['Approval Date'].dtype == 'object':
-        fin_xl['Approval Date'] = fin_xl['Approval Date'].str.strip()
-        fin_xl['Approval Date'] = pd.to_datetime(fin_xl['Approval Date'], errors='coerce')
-    
-    # Remove leading and trailing spaces from fin_xl['operation']
-    fin_xl['operation'] = fin_xl['operation'].str.strip()
-    
-    return fin_xl, main_df
+# Apply the logic to main_df
+main_df['Comment'] = main_df.apply(match_rows, axis=1)
 
-
-# Function to match based on conditions
-def perform_matching(fin_xl, main_df):
-    comments = []
-    reasons = []
-    
-    for idx, row in main_df.iterrows():
-        action = row['Action']
-        workclass = row['Workclass']
-        indian_time = row['Indian Time']
-        
-        # Filter rows from fin_xl based on workclass
-        matching_rows = fin_xl[fin_xl['workclass'] == workclass]
-        
-        if action == 'Create':
-            # Handle 'Create' condition
-            for _, fin_row in matching_rows.iterrows():
-                if fin_row['operation'] == 'A':
-                    if abs((indian_time - fin_row['rcre_time']).total_seconds()) <= 60:
-                        comments.append('Pass')
-                        reasons.append(None)
-                        break
-                elif fin_row['operation'] == 'M':
-                    # Additional check for 'U' operation
-                    user_rows = fin_xl[
-                        (fin_xl['userid'] == fin_row['userid']) &
-                        (fin_xl[['sol id', 'workclass', 'empid']].isnull().all(axis=1)) &
-                        (fin_xl['operation'] == 'U')
-                    ]
-                    if not user_rows.empty:
-                        if abs((indian_time - fin_row['rcre_time']).total_seconds()) <= 60:
-                            comments.append('Pass')
-                            reasons.append(None)
-                            break
-            else:
-                comments.append('Query')
-                reasons.append('No match found for Create condition')
-        
-        elif action == 'Modify':
-            # Handle 'Modify' condition
-            for _, fin_row in matching_rows.iterrows():
-                if fin_row['operation'] == 'M':
-                    if abs((indian_time - fin_row['rcre_time']).total_seconds()) <= 60:
-                        comments.append('Pass')
-                        reasons.append(None)
-                        break
-            else:
-                comments.append('Query')
-                reasons.append('No match found for Modify condition')
-        
-        elif action == 'Delete':
-            # Handle 'Delete' condition
-            for _, fin_row in matching_rows.iterrows():
-                if fin_row['operation'] == 'D':
-                    if abs((indian_time - fin_row['rcre_time']).total_seconds()) <= 60:
-                        comments.append('Pass')
-                        reasons.append(None)
-                        break
-            else:
-                comments.append('Query')
-                reasons.append('No match found for Delete condition')
-        
-        else:
-            comments.append('Query')
-            reasons.append('Invalid Action')
-    
-    main_df['Comment'] = comments
-    main_df['Reason'] = reasons
-    return main_df
-
-
-# Example usage:
-# fin_xl, main_df = preprocess_dataframes(fin_xl, main_df)
-# main_df = perform_matching(fin_xl, main_df)
+# Display the updated main_df
+print(main_df)
 
 
 
