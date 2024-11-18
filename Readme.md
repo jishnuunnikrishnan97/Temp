@@ -525,11 +525,55 @@ def match_dataframes(main_df, fin_xl):
 # result_df = match_dataframes(main_df, fin_xl)
 
 --------------------
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+
+# Example initialization of dataframes
+# Replace with actual data
+fin_xl = pd.DataFrame({
+    'sol id': [1.0, 10.0, 110.0, np.nan],
+    'workclass': [2.0, 20.0, 210.0, np.nan],
+    'Approval Date': ['2023-11-01', '2023-11-05', '2023-11-15', ' '],
+    'operation': [' A ', 'M', 'U', np.nan],
+    '1BankID': [123, 456, 789, None],
+    'rcre_time': ['2023-11-19 14:30:00', '2023-11-19 14:35:00', '2023-11-19 14:40:00', None],
+    'userid': ['abc', 'def', np.nan, None],
+    'empid': [np.nan, 123, np.nan, None],
+})
+
+main_df = pd.DataFrame({
+    'Action': ['Create', 'Modify', 'Delete'],
+    'Workclass': [20.0, 2.0, 210.0],
+    '1Bank ID': [456, 123, 789],
+    'Indian Time': ['2023-11-19 14:35:01 ', '2023-11-19 14:29:50', '2023-11-19 14:40:05'],
+})
+
+# 1. Data Cleaning Tasks
+# Function to safely convert to int and add leading zero
+def clean_and_pad(column):
+    return column.apply(lambda x: str(int(float(x))).zfill(3) if pd.notna(x) and str(x).strip() != '' else None)
+
+# Apply cleaning to 'sol id' and 'workclass'
+fin_xl['sol id'] = clean_and_pad(fin_xl['sol id'])
+fin_xl['workclass'] = clean_and_pad(fin_xl['workclass'])
+
+# Convert 'Indian Time' and 'Approval Date' to datetime, removing spaces if needed
+main_df['Indian Time'] = pd.to_datetime(main_df['Indian Time'].str.strip(), errors='coerce')
+fin_xl['Approval Date'] = pd.to_datetime(fin_xl['Approval Date'].str.strip(), errors='coerce')
+
+# Remove spaces from 'operation'
+fin_xl['operation'] = fin_xl['operation'].str.strip()
+
+# 2. Logic-Based Tasks
 def match_rows(row):
     action = row['Action']
-    workclass = str(int(row['Workclass'])).zfill(3)
+    workclass = str(int(float(row['Workclass']))).zfill(3) if pd.notna(row['Workclass']) else None
     bank_id = row['1Bank ID']
     indian_time = row['Indian Time']
+    
+    if not workclass or pd.isna(bank_id) or pd.isna(indian_time):
+        return 'Query'
     
     # Filter matching rows in fin_xl
     matches = fin_xl[(fin_xl['workclass'] == workclass) & (fin_xl['1BankID'] == bank_id)]
@@ -540,7 +584,8 @@ def match_rows(row):
             if not create_matches.empty:
                 for _, match_row in create_matches.iterrows():
                     # Match Indian Time with threshold of 60 seconds
-                    if abs((indian_time - pd.to_datetime(match_row['rcre_time'])).total_seconds()) <= 60:
+                    rcre_time = pd.to_datetime(match_row['rcre_time'], errors='coerce')
+                    if pd.notna(rcre_time) and abs((indian_time - rcre_time).total_seconds()) <= 60:
                         return 'Pass'
     elif action == 'Modify':
         if not matches.empty:
@@ -548,15 +593,17 @@ def match_rows(row):
             if not modify_matches.empty:
                 for _, match_row in modify_matches.iterrows():
                     # Match Indian Time with threshold of 60 seconds
-                    if abs((indian_time - pd.to_datetime(match_row['rcre_time'])).total_seconds()) <= 60:
+                    rcre_time = pd.to_datetime(match_row['rcre_time'], errors='coerce')
+                    if pd.notna(rcre_time) and abs((indian_time - rcre_time).total_seconds()) <= 60:
                         return 'Pass'
     elif action == 'Delete':
         if not matches.empty:
             delete_matches = matches[matches['operation'] == 'D']
-            if not delete_matches.empty:
+            if not delete_matches.empty():
                 for _, match_row in delete_matches.iterrows():
                     # Match Indian Time with threshold of 60 seconds
-                    if abs((indian_time - pd.to_datetime(match_row['rcre_time'])).total_seconds()) <= 60:
+                    rcre_time = pd.to_datetime(match_row['rcre_time'], errors='coerce')
+                    if pd.notna(rcre_time) and abs((indian_time - rcre_time).total_seconds()) <= 60:
                         return 'Pass'
     
     return 'Query'
@@ -566,6 +613,7 @@ main_df['Comment'] = main_df.apply(match_rows, axis=1)
 
 # Display the updated main_df
 print(main_df)
+
 
 
 
