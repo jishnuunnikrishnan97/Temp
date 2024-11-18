@@ -364,5 +364,55 @@ ipe_xl.drop(columns=['Approval DateTime'], inplace=True)
 # Display result
 print(ipe_xl)
 
+----------------------
+
+import pandas as pd
+
+def process_numeric_id(value):
+    """
+    Process numeric IDs by converting to string, removing decimal, and adding leading zero if needed.
+    """
+    if pd.isna(value):
+        return value
+    # Convert to string and remove decimal part
+    str_val = str(int(float(value)))
+    # Add leading zero if length is 2
+    return '0' + str_val if len(str_val) == 2 else str_val
+
+def process_datetime(df, column):
+    """
+    Process datetime columns by converting to datetime and handling spaces.
+    """
+    if df[column].dtype == 'object':  # If column is string
+        # Strip spaces and convert to datetime
+        return pd.to_datetime(df[column].str.strip())
+    else:
+        # If already datetime or other type, just convert to datetime
+        return pd.to_datetime(df[column])
+
+def process_dataframes(fin_xl, main_df):
+    """
+    Process both dataframes according to the specified requirements.
+    """
+    # Create copies to avoid modifying original dataframes
+    fin_xl = fin_xl.copy()
+    main_df = main_df.copy()
+    
+    # Process 'sol id' and 'workclass' in fin_xl
+    fin_xl['sol id'] = fin_xl['sol id'].apply(process_numeric_id)
+    fin_xl['workclass'] = fin_xl['workclass'].apply(process_numeric_id)
+    
+    # Process datetime columns
+    main_df['Indian Time'] = process_datetime(main_df, 'Indian Time')
+    fin_xl['Approval Date'] = process_datetime(fin_xl, 'Approval Date')
+    
+    # Process 'operation' column - remove leading/trailing spaces
+    fin_xl['operation'] = fin_xl['operation'].str.strip()
+    
+    return fin_xl, main_df
+
+# Example usage:
+# processed_fin_xl, processed_main_df = process_dataframes(fin_xl, main_df)
+
 
 ```
