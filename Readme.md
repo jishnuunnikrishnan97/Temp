@@ -556,6 +556,7 @@ def preprocess_dataframes(fin_xl, main_df):
 # Function to match based on conditions
 def perform_matching(fin_xl, main_df):
     comments = []
+    reasons = []
     
     for idx, row in main_df.iterrows():
         action = row['Action']
@@ -571,6 +572,7 @@ def perform_matching(fin_xl, main_df):
                 if fin_row['operation'] == 'A':
                     if abs((indian_time - fin_row['rcre_time']).total_seconds()) <= 60:
                         comments.append('Pass')
+                        reasons.append(None)
                         break
                 elif fin_row['operation'] == 'M':
                     # Additional check for 'U' operation
@@ -582,9 +584,11 @@ def perform_matching(fin_xl, main_df):
                     if not user_rows.empty:
                         if abs((indian_time - fin_row['rcre_time']).total_seconds()) <= 60:
                             comments.append('Pass')
+                            reasons.append(None)
                             break
             else:
                 comments.append('Query')
+                reasons.append('No match found for Create condition')
         
         elif action == 'Modify':
             # Handle 'Modify' condition
@@ -592,9 +596,11 @@ def perform_matching(fin_xl, main_df):
                 if fin_row['operation'] == 'M':
                     if abs((indian_time - fin_row['rcre_time']).total_seconds()) <= 60:
                         comments.append('Pass')
+                        reasons.append(None)
                         break
             else:
                 comments.append('Query')
+                reasons.append('No match found for Modify condition')
         
         elif action == 'Delete':
             # Handle 'Delete' condition
@@ -602,20 +608,25 @@ def perform_matching(fin_xl, main_df):
                 if fin_row['operation'] == 'D':
                     if abs((indian_time - fin_row['rcre_time']).total_seconds()) <= 60:
                         comments.append('Pass')
+                        reasons.append(None)
                         break
             else:
                 comments.append('Query')
+                reasons.append('No match found for Delete condition')
         
         else:
             comments.append('Query')
+            reasons.append('Invalid Action')
     
     main_df['Comment'] = comments
+    main_df['Reason'] = reasons
     return main_df
 
 
 # Example usage:
 # fin_xl, main_df = preprocess_dataframes(fin_xl, main_df)
 # main_df = perform_matching(fin_xl, main_df)
+
 
 
 ```
