@@ -765,4 +765,106 @@ def clean_merged_columns(df: pd.DataFrame, columns: list) -> pd.DataFrame:
             df_result = unmerge_and_fill(df_result, column)
             
     return df_result
+
+=======================================
+
+
+import pandas as pd
+
+# Sample data for demonstration
+df1 = pd.DataFrame({
+    'Role': ['Admin', 'User', 'Guest'],
+    'Role Desc': ['Administrator', 'Regular User', 'Guest User'],
+    'Entity': ['Global', 'Region1', 'Region2'],
+    'Dept001': ['Normal', 'üPresent', 'Normal'],
+    'Dept002': ['Normal', 'Normal', 'Normal']
+})
+
+df2 = pd.DataFrame({
+    'Department Code': ['Dept001', 'Dept003'],
+    'User Group': ['Admin', 'Guest'],
+    'User Group_Desc': ['Administrator', 'Guest User'],
+    'Access Role_ID': ['Global', 'Region2']
+})
+
+# Step 1: Check if df2['Department Code'] exists in df1 column names
+df2['ACM Comment'] = 'Match Not Found'  # Default value
+for index, row in df2.iterrows():
+    dept_code = row['Department Code']
+    user_group = row['User Group']
+    user_group_desc = row['User Group_Desc']
+    access_role_id = row['Access Role_ID']
+    
+    if dept_code in df1.columns:
+        # Step 2: Search for df2[['User Group', 'User Group_Desc', 'Access Role_ID']] in df1[['Role', 'Role Desc', 'Entity']]
+        matched_rows = df1[
+            (df1['Role'] == user_group) & 
+            (df1['Role Desc'] == user_group_desc) & 
+            (df1['Entity'] == access_role_id)
+        ]
+        
+        # Step 3: Check the matched column for character 'ü'
+        if not matched_rows.empty and 'ü' in matched_rows.iloc[0][dept_code]:
+            # Step 4: Update df2['ACM Comment']
+            df2.at[index, 'ACM Comment'] = 'Match found'
+
+# Result
+print(df2)
+
+
+
+import pandas as pd
+
+# Sample DataFrames
+# df1: Replace with your actual data
+df1 = pd.DataFrame({
+    'Role': ['Admin', 'User', 'Manager'],
+    'Role Desc': ['Admin Role', 'User Role', 'Manager Role'],
+    'Entity': ['E1', 'E2', 'E3'],
+    'Dept_001': ['abc', 'def', 'üghi'],  # Example column
+    'Dept_002': ['üjkl', 'mno', 'pqr']
+})
+
+# df2: Replace with your actual data
+df2 = pd.DataFrame({
+    'User Group': ['Admin', 'User', 'Manager'],
+    'User Group_Desc': ['Admin Role', 'User Role', 'Manager Role'],
+    'Access Role_ID': ['E1', 'E2', 'E3'],
+    'Department Code': ['Dept_001', 'Dept_003', 'Dept_002']
+})
+
+# Step 1: Check if 'Department Code' exists in df1 columns
+def check_and_comment(df1, df2):
+    comments = []
+    for _, row in df2.iterrows():
+        dept_code = row['Department Code']
+        
+        if dept_code in df1.columns:
+            # Step 2: Check for match in Role, Role Desc, and Entity
+            match = df1[
+                (df1['Role'] == row['User Group']) &
+                (df1['Role Desc'] == row['User Group_Desc']) &
+                (df1['Entity'] == row['Access Role_ID'])
+            ]
+            
+            if not match.empty:
+                # Step 3: Check for 'ü' character in the matched column
+                if any(match[dept_code].str.contains('ü', na=False)):
+                    comments.append('Match found')
+                    continue
+        comments.append('Match Not Found')
+    
+    df2['ACM Comment'] = comments
+    return df2
+
+# Apply the function
+df2 = check_and_comment(df1, df2)
+
+# Display the updated df2
+print(df2)
+
+
+
+
+
 ```
