@@ -614,6 +614,107 @@ main_df['Comment'] = main_df.apply(match_rows, axis=1)
 # Display the updated main_df
 print(main_df)
 
+======================================
+
+
+import pandas as pd
+
+# Sample data for demonstration
+# Replace these with your actual data
+fin_xl = pd.DataFrame({
+    'solid': [12.0, 3.0, 0.0, 15.0],
+    'workclass': [45.0, 9.0, 7.0, 30.0],
+    'rcre_time': ['2024-11-19 10:30:00 ', '2024-11-19 11:45:00', '2024-11-19 12:00:00 ', ' 2024-11-19 01:15:00'],
+    'operation': [' op1', 'op2 ', '  op3  ', 'op4']
+})
+
+main_df = pd.DataFrame({
+    'Indian Time': ['2024-11-19 10:30:00 ', ' 2024-11-19 11:45:00', '2024-11-19 12:00:00 ', ' 2024-11-19 01:15:00']
+})
+
+# 1. Convert fin_xl['solid'] to str, remove decimal, and pad with leading zero if needed
+fin_xl['solid'] = fin_xl['solid'].apply(lambda x: str(int(x)).zfill(3))
+
+# 2. Convert fin_xl['workclass'] to str, remove decimal, and pad with leading zero if needed
+fin_xl['workclass'] = fin_xl['workclass'].apply(lambda x: str(int(x)).zfill(3))
+
+# 3. Determine dtype of main_df['Indian Time'] and change it to datetime, discarding spaces
+if main_df['Indian Time'].dtype == 'object':
+    main_df['Indian Time'] = main_df['Indian Time'].str.strip()
+    main_df['Indian Time'] = pd.to_datetime(main_df['Indian Time'], errors='coerce')
+
+# 4. Determine dtype of fin_xl['rcre_time'] and change it to datetime, discarding spaces
+if fin_xl['rcre_time'].dtype == 'object':
+    fin_xl['rcre_time'] = fin_xl['rcre_time'].str.strip()
+    fin_xl['rcre_time'] = pd.to_datetime(fin_xl['rcre_time'], errors='coerce')
+
+# 5. Remove leading or trailing spaces in fin_xl['operation']
+fin_xl['operation'] = fin_xl['operation'].str.strip()
+
+# Display the updated dataframes
+print("Updated fin_xl:")
+print(fin_xl)
+print("\nUpdated main_df:")
+print(main_df)
+
+
+
+
+import numpy as np
+
+# Adding sample data for `main_df` for demonstration (replace with actual data)
+main_df['Action'] = ['Create', 'Modify', 'Delete', 'Create']
+main_df['Workclass'] = ['045', '009', '007', '030']
+main_df['1Bank ID'] = ['B001', 'B002', 'B003', 'B004']
+
+fin_xl['1BankID'] = ['B001', 'B002', 'B003', 'B004']
+fin_xl['userid'] = ['U001', 'U002', 'U003', np.nan]
+
+# Define a function to calculate the time difference in seconds
+def time_difference(t1, t2):
+    return abs((t1 - t2).total_seconds())
+
+# Define the logic for processing main_df
+def process_row(row):
+    action = row['Action']
+    workclass = row['Workclass']
+    bank_id = row['1Bank ID']
+    indian_time = row['Indian Time']
+
+    # Get matching rows in fin_xl
+    matches = fin_xl[(fin_xl['workclass'] == workclass) & (fin_xl['1BankID'] == bank_id)]
+    
+    if matches.empty:
+        return 'Query'
+    
+    for _, match in matches.iterrows():
+        operation = match['operation']
+        rcre_time = match['rcre_time']
+        
+        if action == 'Create':
+            if operation == 'A' and time_difference(indian_time, rcre_time) <= 60:
+                return 'Pass'
+            elif operation == 'M':
+                # Find second row with specific criteria
+                second_row = fin_xl[
+                    (fin_xl['userid'] == match['userid']) &
+                    (fin_xl[['solid', 'workclass', 'empid']].isnull().all(axis=1)) &
+                    (fin_xl['operation'] == 'U')
+                ]
+                if not second_row.empty and time_difference(indian_time, rcre_time) <= 60:
+                    return 'Pass'
+        elif action == 'Modify' and operation == 'M' and time_difference(indian_time, rcre_time) <= 60:
+            return 'Pass'
+        elif action == 'Delete' and operation == 'D' and time_difference(indian_time, rcre_time) <= 60:
+            return 'Pass'
+    
+    return 'Query'
+
+# Apply the function to main_df
+main_df['Comment'] = main_df.apply(process_row, axis=1)
+
+# Display the updated main_df
+print(main_df)
 
 
 
