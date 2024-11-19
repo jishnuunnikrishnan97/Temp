@@ -710,5 +710,59 @@ main_df['Comment'] = main_df.apply(process_row, axis=1)
 print(main_df)
 
 
+============================
 
+import pandas as pd
+
+def unmerge_and_fill(df: pd.DataFrame, column_name: str) -> pd.DataFrame:
+    """
+    Unmerges cells in a specified column and forward fills the values.
+    
+    Parameters:
+    -----------
+    df : pd.DataFrame
+        The input DataFrame containing merged cells
+    column_name : str
+        The name of the column containing merged cells to be filled
+        
+    Returns:
+    --------
+    pd.DataFrame
+        DataFrame with the specified column unmerged and filled
+    """
+    # Create a copy to avoid modifying the original DataFrame
+    df_cleaned = df.copy()
+    
+    # Forward fill the specified column
+    df_cleaned[column_name] = df_cleaned[column_name].ffill()
+    
+    # Reset the index if needed
+    df_cleaned = df_cleaned.reset_index(drop=True)
+    
+    return df_cleaned
+
+# Example usage for multiple columns
+def clean_merged_columns(df: pd.DataFrame, columns: list) -> pd.DataFrame:
+    """
+    Handles multiple columns with merged cells.
+    
+    Parameters:
+    -----------
+    df : pd.DataFrame
+        The input DataFrame containing merged cells
+    columns : list
+        List of column names to process
+        
+    Returns:
+    --------
+    pd.DataFrame
+        DataFrame with all specified columns unmerged and filled
+    """
+    df_result = df.copy()
+    
+    for column in columns:
+        if column in df.columns:
+            df_result = unmerge_and_fill(df_result, column)
+            
+    return df_result
 ```
