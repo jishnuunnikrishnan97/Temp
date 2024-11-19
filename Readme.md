@@ -863,6 +863,52 @@ df2 = check_and_comment(df1, df2)
 # Display the updated df2
 print(df2)
 
+==========================
+
+import pandas as pd
+
+# Example dataframes
+data1 = {
+    'User Group': ['A1', 'A2', 'A3', 'A4'],
+    'Dept1': ['ü', 'x', 'y', 'z'],
+    'Dept2': ['a', 'ü', 'c', 'd'],
+}
+df1 = pd.DataFrame(data1)
+
+data2 = {
+    'Department Code': ['Dept1', 'Dept2', 'Dept3'],
+    'User Group': ['A1', 'A3', 'A5'],
+}
+df2 = pd.DataFrame(data2)
+
+# Task implementation
+def check_matches(df1, df2):
+    comments = []
+    for _, row in df2.iterrows():
+        dept_code = row['Department Code']
+        user_group = row['User Group']
+        
+        # Step 1: Check if Department Code exists in df1 columns
+        if dept_code in df1.columns:
+            # Step 2: Check if User Group exists in df1[df1.columns[1]]
+            if user_group in df1[df1.columns[0]].values:
+                # Find the row in df1 where the match is found
+                matched_row = df1[df1[df1.columns[0]] == user_group]
+                # Step 3: Check for 'ü' in the matched column
+                if 'ü' in matched_row[dept_code].values:
+                    comments.append('Match found')
+                    continue
+        comments.append('Match Not Found')
+    
+    # Step 4: Add ACM Comment column to df2
+    df2['ACM Comment'] = comments
+    return df2
+
+# Apply the function
+df2 = check_matches(df1, df2)
+
+# Print the result
+print(df2)
 
 
 
