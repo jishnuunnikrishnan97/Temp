@@ -911,6 +911,18 @@ df2 = check_matches(df1, df2)
 print(df2)
 
 
+def check_conditions(row):
+    match = main_df[main_df['USERID'] == row['USERID']]
+    if not match.empty:
+        matched_row = match.iloc[0]
+        if (row['Action'] == 'Delete' and 
+            matched_row['Action_Type'] == 'REMOVE USER' and 
+            row['Approval Date'] == matched_row['LOG_DATE']):
+            return 'Pass'
+    return 'Query'
+
+# Apply the conditions to the 'Remarks' column
+murex_xl['Remarks'] = murex_xl.apply(check_conditions, axis=1)
 
 
 ```
