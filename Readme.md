@@ -925,7 +925,26 @@ def check_conditions(row):
 murex_xl['Remarks'] = murex_xl.apply(check_conditions, axis=1)
 
 
-roles_list = [str(role).lower() for role in roles_list]
+import pandas as pd
+
+def filter_roles(ipe_xl, roles_list):
+    """
+    Filter roles in the DataFrame based on a list of roles.
+    
+    Parameters:
+    -----------
+    ipe_xl : pandas.DataFrame
+        Input DataFrame with a 'roles' column
+    roles_list : list
+        List of roles to filter
+    
+    Returns:
+    --------
+    pandas.DataFrame
+        DataFrame with a new 'fil_roles' column containing matched roles
+    """
+    # Convert roles_list to lowercase for case-insensitive matching
+    roles_list = [str(role).lower() for role in roles_list]
     
     # Function to find matching roles in a single row
     def find_matching_roles(row_roles):
@@ -948,5 +967,8 @@ roles_list = [str(role).lower() for role in roles_list]
     ipe_xl['fil_roles'] = ipe_xl['roles'].apply(find_matching_roles)
     
     return ipe_xl
+
+# Example usage:
+# filtered_df = filter_roles(ipe_xl, roles_list)
 
 ```
