@@ -925,4 +925,28 @@ def check_conditions(row):
 murex_xl['Remarks'] = murex_xl.apply(check_conditions, axis=1)
 
 
+roles_list = [str(role).lower() for role in roles_list]
+    
+    # Function to find matching roles in a single row
+    def find_matching_roles(row_roles):
+        # Convert row roles to lowercase and split if it's a string
+        if isinstance(row_roles, str):
+            row_roles_lower = row_roles.lower().split(',')
+        else:
+            return ''
+        
+        # Find matching roles
+        matched_roles = [
+            role.strip() for role in row_roles_lower 
+            if any(list_role in role.strip() for list_role in roles_list)
+        ]
+        
+        # Return matched roles as comma-separated string
+        return ', '.join(matched_roles)
+    
+    # Create a new column with filtered roles
+    ipe_xl['fil_roles'] = ipe_xl['roles'].apply(find_matching_roles)
+    
+    return ipe_xl
+
 ```
