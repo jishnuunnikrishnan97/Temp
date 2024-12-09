@@ -973,30 +973,30 @@ def filter_roles(ipe_xl, roles_list):
 
 import pandas as pd
 
-# Sample data for main_df and fin_xl
-# main_df = pd.DataFrame(...)
-# fin_xl = pd.DataFrame(...)
+# Sample dataframes
+# main_df = ...
+# fin_xl = ...
 
-# Adding a 'Remarks' column to main_df with default value as 'fail'
-main_df['Remarks'] = 'fail'
+# Create a new column in main_df to store the remarks
+main_df['Remarks'] = 'fail'  # Default value
 
-# Iterate through each row in main_df
-for index, main_row in main_df.iterrows():
-    # Filter rows in fin_xl where '1BankID' matches 'useridLower'
-    matches = fin_xl[fin_xl['1BankID'] == main_row['useridLower']]
+# Iterate through each row of main_df
+for idx, row in main_df.iterrows():
+    # Filter rows in fin_xl where 'useridLower' matches '1BankID'
+    matches = fin_xl[fin_xl['useridLower'] == row['1BankID']]
     
-    # Check if any row satisfies the conditions
-    for _, fin_row in matches.iterrows():
-        # Calculate the time difference in seconds
-        time_difference = abs((fin_row['Indian time'] - main_row['rcre date']).total_seconds())
-        
-        # Check conditions with 200 seconds threshold for datetime comparison
-        if (fin_row['workclass'] == main_row['workclass']) and (time_difference <= 200):
-            main_df.at[index, 'Remarks'] = 'pass'
-            break  # No need to check further if a match is found
+    # Check for matching rows
+    for _, match_row in matches.iterrows():
+        if (
+            match_row['workclass'] == row['Workclass'] and
+            match_row['rcre date'] == row['Indian time']
+        ):
+            main_df.at[idx, 'Remarks'] = 'pass'
+            break  # Stop checking further once a match is found
 
-# Display updated main_df
+# Display the updated main_df
 print(main_df)
+
 
 
 
