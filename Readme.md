@@ -971,4 +971,28 @@ def filter_roles(ipe_xl, roles_list):
 # Example usage:
 # filtered_df = filter_roles(ipe_xl, roles_list)
 
+import pandas as pd
+
+# Sample data for main_df and fin_xl
+# main_df = pd.DataFrame(...)
+# fin_xl = pd.DataFrame(...)
+
+# Adding a 'Remarks' column to main_df with default value as 'fail'
+main_df['Remarks'] = 'fail'
+
+# Iterate through each row in main_df
+for index, main_row in main_df.iterrows():
+    # Filter rows in fin_xl where '1BankID' matches 'useridLower'
+    matches = fin_xl[fin_xl['1BankID'] == main_row['useridLower']]
+    
+    # Check if any row satisfies the conditions
+    for _, fin_row in matches.iterrows():
+        if (fin_row['workclass'] == main_row['workclass']) and (fin_row['Indian time'] == main_row['rcre date']):
+            main_df.at[index, 'Remarks'] = 'pass'
+            break  # No need to check further if a match is found
+
+# Display updated main_df
+print(main_df)
+
+
 ```
