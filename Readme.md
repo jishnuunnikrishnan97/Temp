@@ -987,12 +987,17 @@ for index, main_row in main_df.iterrows():
     
     # Check if any row satisfies the conditions
     for _, fin_row in matches.iterrows():
-        if (fin_row['workclass'] == main_row['workclass']) and (fin_row['Indian time'] == main_row['rcre date']):
+        # Calculate the time difference in seconds
+        time_difference = abs((fin_row['Indian time'] - main_row['rcre date']).total_seconds())
+        
+        # Check conditions with 200 seconds threshold for datetime comparison
+        if (fin_row['workclass'] == main_row['workclass']) and (time_difference <= 200):
             main_df.at[index, 'Remarks'] = 'pass'
             break  # No need to check further if a match is found
 
 # Display updated main_df
 print(main_df)
+
 
 
 ```
