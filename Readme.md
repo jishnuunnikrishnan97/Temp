@@ -972,31 +972,71 @@ def filter_roles(ipe_xl, roles_list):
 # filtered_df = filter_roles(ipe_xl, roles_list)
 
 import pandas as pd
+import numpy as np
 
-# Sample dataframes
-# main_df = ...
-# fin_xl = ...
-
-# Create a new column in main_df to store the remarks
-main_df['Remarks'] = 'fail'  # Default value
-
-# Iterate through each row of main_df
-for idx, row in main_df.iterrows():
-    # Filter rows in fin_xl where 'useridLower' matches '1BankID'
-    matches = fin_xl[fin_xl['useridLower'] == row['1BankID']]
+def match_and_update_remarks(main_df, fin_xl):
+    """
+    Match rows between main_df and fin_xl based on specific conditions.
     
-    # Check for matching rows
-    for _, match_row in matches.iterrows():
-        if (
-            match_row['workclass'] == row['Workclass'] and
-            match_row['rcre date'] == row['Indian time']
-        ):
-            main_df.at[idx, 'Remarks'] = 'pass'
-            break  # Stop checking further once a match is found
+    Parameters:
+    -----------
+    main_df : pandas.DataFrame
+        Main DataFrame to be updated
+    fin_xl : pandas.DataFrame
+        Financial DataFrame to match against
+    
+    Returns:
+    --------
+    pandas.DataFrame
+        Updated main_df with 'Remarks' column
+    """
+    # Ensure 'Remarks' column exists in main_df
+    if 'Remarks' not in main_df.columns:
+        main_df['Remarks'] = ''
+    
+    # Create a copy to avoid modifying the original DataFrame
+    main_df_updated = main_df.copy()
+    
+    # Function to find matching rows and update remarks
+    def find_and_update_match(row):
+        # Find rows in fin_xl with matching 1BankID
+        matching_fin_rows = fin_xl[fin_xl['useridLower'] == row['1BankID']]
+        
+        # If no matching rows, return empty string
+        if matching_fin_rows.empty:
+            return ''
+        
+        # Flag to track if any row meets all conditions
+        match_found = False
+        
+        # Iterate through matching fin_xl rows
+        for _, fin_row in matching_fin_rows.iterrows():
+            # Check workclass condition
+            workclass_match = (fin_row['workclass'] == row['Workclass'])
+            
+            # Check time condition with 200 seconds threshold
+            try:
+                time_diff = abs((row['Indian time'] - fin_row['rcre date']).total_seconds())
+                time_match = time_diff <= 200
+            except Exception:
+                # If time comparison fails, set time_match to False
+                time_match = False
+            
+            # If both conditions are met
+            if workclass_match and time_match:
+                match_found = True
+                break
+        
+        # Return 'pass' if match found, otherwise empty string
+        return 'pass' if match_found else ''
+    
+    # Apply the matching function to create Remarks column
+    main_df_updated['Remarks'] = main_df_updated.apply(find_and_update_match, axis=1)
+    
+    return main_df_updated
 
-# Display the updated main_df
-print(main_df)
-
+# Example usage:
+# updated_main_df = match_and_update_remarks(main_df, fin_xl)
 
 
 
