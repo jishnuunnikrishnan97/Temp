@@ -1040,39 +1040,42 @@ def match_and_update_remarks(main_df, fin_xl):
 
 ===================
 
-import re
 import pandas as pd
+import re
 
-def find_row_index(df, column_name, search_string):
-  """
-  Finds the index of the first row in the specified column that contains the given search string.
+def search_indices(column, search_string):
+    """
+    Function to search for a regex pattern in a DataFrame column and return the indices of matching rows.
+    
+    Args:
+    - column (pd.Series): The column of the DataFrame to search within.
+    - search_string (str): The regex pattern to search for.
+    
+    Returns:
+    - list: Indices of rows where the search string matches.
+    """
+    # Ensure the column is a pandas Series
+    if not isinstance(column, pd.Series):
+        raise ValueError("The 'column' parameter must be a pandas Series.")
+    
+    # Compile the regex pattern
+    pattern = re.compile(search_string)
+    
+    # Use .str.contains() to find matches
+    matching_indices = column[column.str.contains(pattern, na=False)].index.tolist()
+    
+    return matching_indices
 
-  Args:
-    df: The pandas DataFrame.
-    column_name: The name of the column to search.
-    search_string: The string to search for in the column.
-
-  Returns:
-    The index of the row, or -1 if not found.
-  """
-
-  for i, row_value in enumerate(df[column_name]):
-    if re.search(search_string, str(row_value)):
-      return i
-  return -1
-
-# Example usage:
-data = {'Column1': ['abc123', 'def456', 'ghi789'], 'Column2': ['xyz', 'pqr', 'mno']}
+# Example Usage
+# Create a sample DataFrame
+data = {
+    "col_name": ["apple pie", "banana split", "cherry tart", "apple crumble", "pineapple"]
+}
 df = pd.DataFrame(data)
 
-column_name = 'Column1'
-search_str = '123'
-index = find_row_index(df, column_name, search_str)
-
-if index != -1:
-  print(f"Row with '{search_str}' found at index {index}")
-else:
-  print(f"Row with '{search_str}' not found in column '{column_name}'")
+# Search for rows containing 'apple' using the function
+indices = search_indices(df["col_name"], r"apple")
+print("Matching indices:", indices)
 
 
 ```
