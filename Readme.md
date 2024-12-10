@@ -1043,34 +1043,36 @@ def match_and_update_remarks(main_df, fin_xl):
 import re
 import pandas as pd
 
-def find_column_index(df, search_string):
+def find_row_index(df, column_name, search_string):
   """
-  Finds the index of the first column whose name contains the given search string.
+  Finds the index of the first row in the specified column that contains the given search string.
 
   Args:
     df: The pandas DataFrame.
-    search_string: The string to search for in the column names.
+    column_name: The name of the column to search.
+    search_string: The string to search for in the column.
 
   Returns:
-    The index of the column, or -1 if not found.
+    The index of the row, or -1 if not found.
   """
 
-  for i, col_name in enumerate(df.columns):
-    if re.search(search_string, col_name):
+  for i, row_value in enumerate(df[column_name]):
+    if re.search(search_string, str(row_value)):
       return i
   return -1
 
 # Example usage:
-data = {'xyfColumn1': [1, 2, 3], 'Column2': ['a', 'b', 'c'], 'xyfColumn3': [4, 5, 6]}
+data = {'Column1': ['abc123', 'def456', 'ghi789'], 'Column2': ['xyz', 'pqr', 'mno']}
 df = pd.DataFrame(data)
 
-search_str = 'xyf'
-index = find_column_index(df, search_str)
+column_name = 'Column1'
+search_str = '123'
+index = find_row_index(df, column_name, search_str)
 
 if index != -1:
-  print(f"Column '{df.columns[index]}' found at index {index}")
+  print(f"Row with '{search_str}' found at index {index}")
 else:
-  print(f"Column with '{search_str}' not found")
+  print(f"Row with '{search_str}' not found in column '{column_name}'")
 
 
 ```
