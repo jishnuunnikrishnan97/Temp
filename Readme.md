@@ -1038,6 +1038,39 @@ def match_and_update_remarks(main_df, fin_xl):
 # Example usage:
 # updated_main_df = match_and_update_remarks(main_df, fin_xl)
 
+===================
+
+import re
+import pandas as pd
+
+def find_column_index(df, search_string):
+  """
+  Finds the index of the first column whose name contains the given search string.
+
+  Args:
+    df: The pandas DataFrame.
+    search_string: The string to search for in the column names.
+
+  Returns:
+    The index of the column, or -1 if not found.
+  """
+
+  for i, col_name in enumerate(df.columns):
+    if re.search(search_string, col_name):
+      return i
+  return -1
+
+# Example usage:
+data = {'xyfColumn1': [1, 2, 3], 'Column2': ['a', 'b', 'c'], 'xyfColumn3': [4, 5, 6]}
+df = pd.DataFrame(data)
+
+search_str = 'xyf'
+index = find_column_index(df, search_str)
+
+if index != -1:
+  print(f"Column '{df.columns[index]}' found at index {index}")
+else:
+  print(f"Column with '{search_str}' not found")
 
 
 ```
