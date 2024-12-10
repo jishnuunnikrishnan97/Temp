@@ -1077,5 +1077,51 @@ df = pd.DataFrame(data)
 indices = search_indices(df["col_name"], r"apple")
 print("Matching indices:", indices)
 
+===========================================================================
+
+def process_rows(imex_working_file, df):
+    # Initialize a new column in imex_working_file for ACM Remarks
+    imex_working_file['ACM Remarks'] = ""
+
+    for index, row in imex_working_file.iterrows():
+        # Step 1: Get indices of rows in df["Role"]
+        user_group = row["User Group"]
+        role_indices = search_indices(df["Role"], user_group)
+        
+        # Step 2: Filter rows in df["Role Description"]
+        user_group_desc = row["User Group Desc"]
+        filtered_role_indices = [
+            idx for idx in role_indices 
+            if user_group_desc in df.at[idx, "Role Description"]
+        ]
+
+        # Step 3: Filter df["Dept"] with "Access Role_ID"
+        access_role_id = row["Acces Role_ID"]
+        final_indices = [
+            idx for idx in filtered_role_indices 
+            if access_role_id == df.at[idx, "Dept"]
+        ]
+        
+        if len(final_indices) != 1:
+            # If no match or multiple matches, skip to the next row
+            continue
+        
+        # Step 4: Save the single remaining index
+        filtered_row = final_indices[0]
+
+        # Step 5: Use find_column_index and check the value
+        department_code = row["Department Code"]
+        col_index = find_column_index(df, department_code)
+
+        if col_index == -1:
+            # If no column matches, skip to the next row
+            continue
+
+        # Check the value at df[filtered_row][col_index]
+        if df.iloc[filtered_row, col_index] == "x":
+            imex_working_file.at[index, "ACM Remarks"] = "Found in ACM"
+
+    return imex_working_file
+
 
 ```
