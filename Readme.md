@@ -1,4 +1,4 @@
-```
+u```
 
 Claude
 
@@ -1122,6 +1122,44 @@ def process_rows(imex_working_file, df):
             imex_working_file.at[index, "ACM Remarks"] = "Found in ACM"
 
     return imex_working_file
+
+===========================
+
+import pandas as pd
+
+def ensure_columns(switch, poll):
+    """
+    Checks if all elements from 'poll' exist in DataFrame columns.
+    Adds missing columns if not present.
+    
+    Parameters:
+    -----------
+    switch : pandas.DataFrame
+        Input DataFrame to check and modify
+    poll : list
+        List of column names to ensure exist in the DataFrame
+    
+    Returns:
+    --------
+    pandas.DataFrame
+        Updated DataFrame with all required columns
+    """
+    # Create a copy of the DataFrame to avoid modifying the original
+    df = switch.copy()
+    
+    # Find columns from poll that are missing in the DataFrame
+    missing_columns = [col for col in poll if col not in df.columns]
+    
+    # Add missing columns with None/NaN values
+    for col in missing_columns:
+        df[col] = None
+    
+    return df
+
+# Example usage:
+# updated_switch = ensure_columns(switch, poll)
+
+
 
 
 ```
