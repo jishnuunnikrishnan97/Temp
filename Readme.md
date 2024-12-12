@@ -1,6 +1,5 @@
 ```
 
-Claude
 
 def extract_log_data(data_list):
     """
@@ -1160,6 +1159,50 @@ def ensure_columns(switch, poll):
 # updated_switch = ensure_columns(switch, poll)
 
 
+
+-----------------------
+
+
+import pandas as pd
+
+def populate_user_groups(m_w_f, group_Names):
+    """
+    Create a new column 'User Group_1' by matching elements from group_Names 
+    in the 'User Group' column.
+    
+    Parameters:
+    -----------
+    m_w_f : pandas.DataFrame
+        Input dataframe with 'User Group' column
+    group_Names : list
+        List of group names to match against
+    
+    Returns:
+    --------
+    pandas.DataFrame
+        Dataframe with new 'User Group_1' column
+    """
+    # Create a copy of the dataframe to avoid modifying the original
+    df = m_w_f.copy()
+    
+    # Function to find matching groups
+    def find_matching_groups(user_group):
+        # Find all groups from group_Names that are in the user_group string
+        matches = [group for group in group_Names if group.lower() in user_group.lower()]
+        
+        # Return matches as a comma-separated string, or an empty string if no matches
+        return ', '.join(matches) if matches else ''
+    
+    # Apply the matching function to create the new column
+    df['User Group_1'] = df['User Group'].apply(find_matching_groups)
+    
+    return df
+
+# Example usage:
+# group_Names = ['Admin', 'Manager', 'Analyst']
+# m_w_f = pd.DataFrame({'User Group': ['Admin Team', 'Sales Manager', 'Data Analyst Team']})
+# result = populate_user_groups(m_w_f, group_Names)
+# print(result)
 
 
 ```
