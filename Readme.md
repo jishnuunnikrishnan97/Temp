@@ -1,175 +1,88 @@
 ```
 
-#sub_agent
-import json
-import re
+import os
+from src.bigquery_agent import BigQueryAgent, bigquery # Import what's needed
 import pandas as pd
-from tempfile import NamedTemporaryFile
+import logging
  
-from google.adk.agents import BaseAgent
-from google.ai.generativelanguage import Content
+# Optional: Load .env file if you are using one
+# from dotenv import load_dotenv
+# load_dotenv()
  
+# --- CONFIGURATION ---
+# Get from environment variables or hardcode for simplicity here
+MY_PROJECT_ID = os.getenv("GCP_PROJECT_ID", "sherif-440815") # <--- CHANGE THIS or set env var
+MY_DATASET_ID = "my_agent_dataset"
+MY_TABLE_ID_DF = "my_table_from_df"
+MY_TABLE_ID_CSV = "my_table_from_csv"
+MY_GCS_BUCKET = os.getenv("GCS_BUCKET_NAME", "kgs-kdn-india-storage-bucket") # <--- CHANGE THIS or set env var
  
-class ExcelConverterAgent(BaseAgent):
-    def __init__(self):
-        super().__init__(
-            name="ExcelConverter",
-            description="Converts extracted tables into a multi-sheet Excel file"
-        )
- 
-    async def run(self, context, input_data: Content):
-        raw = input_data.parts[0].text
-        tables = self._extract_tables(raw)
- 
-        if not tables:
-            return Content(parts=[{"text": "No tables detected in the input."}])
- 
-        # Write each table to its own sheet in one Excel file
-        with NamedTemporaryFile(delete=False, suffix=".xlsx") as tmp:
-            with pd.ExcelWriter(tmp.name, engine="openpyxl") as writer:
-                for idx, tbl in enumerate(tables, start=1):
-                    df = pd.DataFrame(tbl["rows"], columns=tbl["columns"])
-                    sheet = f"Table_{idx}"[:31]  # Excel max sheet name length
-                    df.to_excel(writer, sheet_name=sheet, index=False)
-            path = tmp.name
- 
-        # Read back bytes
-        with open(path, "rb") as f:
-            data = f.read()
- 
-        return Content(parts=[{
-            "file_data": {
-                "mime_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                "file_uri": path,
-                "data": data
-            }
-        }])
- 
-    def _extract_tables(self, text: str):
-        # 1) JSON-first
-        t = text.strip()
-        if t.startswith("{") or t.startswith("["):
-            try:
-                obj = json.loads(t)
-                raw = obj.get("tables") if isinstance(obj, dict) else obj
-                return [
-                    {"columns": tbl["columns"], "rows": tbl["rows"]}
-                    for tbl in raw
-                    if "columns" in tbl and "rows" in tbl
-                ]
-            except json.JSONDecodeError:
-                pass
- 
-        # 2) Markdown-style
-        md = []
-        for block in re.split(r"\n\s*\n", text):
-            lines = block.strip().splitlines()
-            if len(lines) >= 2 and lines[0].startswith("|") and re.match(r"^\|\s*[-:]+\s*(\|\s*[-:]+\s*)+\|?$", lines[1]):
-                cols = [c.strip() for c in lines[0].strip("| ").split("|")]
-                rows = []
-                for row in lines[2:]:
-                    cells = [c.strip() for c in row.strip("| ").split("|")]
-                    cells += [""] * (len(cols) - len(cells))
-                    rows.append(cells)
-                md.append({"columns": cols, "rows": rows})
-        if md:
-            return md
- 
-        # 3) Plain-text blocks with pipes or tabs
-        pts = []
-        block = []
-        for line in text.splitlines():
-            if re.search(r"[│\|\t]", line):
-                block.append(line)
-            elif block:
-                pts.append(self._parse_plain(block))
-                block = []
-        if block:
-            pts.append(self._parse_plain(block))
-        return pts
- 
-    def _parse_plain(self, lines):
-        # Normalize │ → |
-        norm = [re.sub(r"[│]", "|", ln) for ln in lines]
-        rows = []
-        for ln in norm:
-            if "|" in ln:
-                cells = [c.strip() for c in ln.strip("| ").split("|")]
-            else:
-                cells = [c.strip() for c in ln.split("\t")]
-            rows.append(cells)
-        # Pad
-        mc = max(len(r) for r in rows)
-        for r in rows:
-            r += [""] * (mc - len(r))
-        return {"columns": rows[0], "rows": rows[1:]}
+# Check if GOOGLE_APPLICATION_CREDENTIALS is set
+if not os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
+    logging.error("GOOGLE_APPLICATION_CREDENTIALS environment variable not set.")
+    logging.info("Please set it to the path of your service account key JSON file.")
+    # Example: export GOOGLE_APPLICATION_CREDENTIALS=\"/path/to/credentials/your-service-account-file.json\"")
+    exit(1)
+# --- END CONFIGURATION ---
  
  
-def register_agents():
-    return {"excel_converter": ExcelConverterAgent()}
-
-
-error:
-Traceback (most recent call last):
-  File "C:\Agents\.venv\Lib\site-packages\google\adk\cli\fast_api.py", line 626, in event_generator
-    async for event in runner.run_async(
-    ...<8 lines>...
-      yield f"data: {sse_event}\n\n"
-  File "C:\Agents\.venv\Lib\site-packages\google\adk\runners.py", line 197, in run_async
-    async for event in invocation_context.agent.run_async(invocation_context):
-    ...<2 lines>...
-      yield event
-  File "C:\Agents\.venv\Lib\site-packages\google\adk\agents\base_agent.py", line 141, in run_async
-    async for event in self._run_async_impl(ctx):
-      yield event
-  File "C:\Agents\.venv\Lib\site-packages\google\adk\agents\llm_agent.py", line 227, in _run_async_impl
-    async for event in self._llm_flow.run_async(ctx):
-      self.__maybe_save_output_to_state(event)
-      yield event
-  File "C:\Agents\.venv\Lib\site-packages\google\adk\flows\llm_flows\base_llm_flow.py", line 231, in run_async
-    async for event in self._run_one_step_async(invocation_context):
-      last_event = event
-      yield event
-  File "C:\Agents\.venv\Lib\site-packages\google\adk\flows\llm_flows\base_llm_flow.py", line 261, in _run_one_step_async
-    async for event in self._postprocess_async(
-    ...<2 lines>...
-      yield event
-  File "C:\Agents\.venv\Lib\site-packages\google\adk\flows\llm_flows\base_llm_flow.py", line 329, in _postprocess_async
-    async for event in self._postprocess_handle_function_calls_async(
-    ...<2 lines>...
-      yield event
-  File "C:\Agents\.venv\Lib\site-packages\google\adk\flows\llm_flows\base_llm_flow.py", line 419, in _postprocess_handle_function_calls_async
-    async for event in agent_to_run.run_async(invocation_context):
-      yield event
-  File "C:\Agents\.venv\Lib\site-packages\google\adk\agents\base_agent.py", line 141, in run_async
-    async for event in self._run_async_impl(ctx):
-      yield event
-  File "C:\Agents\.venv\Lib\site-packages\google\adk\agents\base_agent.py", line 182, in _run_async_impl
-    raise NotImplementedError(
-        f'_run_async_impl for {type(self)} is not implemented.'
-    )
-NotImplementedError: _run_async_impl for <class 'PDF Data Extractor.subagents.excel_converter.agent.ExcelConverterAgent'> is not implemented.
-2025-05-18 16:15:28,430 - ERROR - __init__.py:157 - Failed to detach context
-Traceback (most recent call last):
-  File "C:\Agents\.venv\Lib\site-packages\opentelemetry\trace\__init__.py", line 587, in use_span
-    yield span
-  File "C:\Agents\.venv\Lib\site-packages\opentelemetry\sdk\trace\__init__.py", line 1105, in start_as_current_span
-    yield span
-  File "C:\Agents\.venv\Lib\site-packages\opentelemetry\trace\__init__.py", line 452, in start_as_current_span
-    yield span
-  File "C:\Agents\.venv\Lib\site-packages\google\adk\flows\llm_flows\base_llm_flow.py", line 487, in _call_llm_async
-    yield llm_response
-GeneratorExit
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "C:\Agents\.venv\Lib\site-packages\opentelemetry\context\__init__.py", line 155, in detach
-    _RUNTIME_CONTEXT.detach(token)
-    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
-  File "C:\Agents\.venv\Lib\site-packages\opentelemetry\context\contextvars_context.py", line 53, in detach
-    self._current_context.reset(token)
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
-ValueError: <Token var=<ContextVar name='current_context' default={} at 0x00000245FBDDF1A0> at 0x000002459A78C980> was created in a different Context
+if MY_PROJECT_ID == "your-gcp-project-id" or MY_GCS_BUCKET == "your-gcs-bucket-name":
+    logging.warning("Please update MY_PROJECT_ID and MY_GCS_BUCKET in run.py or set environment variables.")
+    # exit(1) # Optionally exit if not configured
+ 
+def main():
+    logging.info(f"Starting BigQuery Agent for project: {MY_PROJECT_ID}, dataset: {MY_DATASET_ID}")
+ 
+    agent = BigQueryAgent(project_id=MY_PROJECT_ID, dataset_id=MY_DATASET_ID)
+ 
+    # 1. Upload from Pandas DataFrame
+    data = {
+        'name': ['Alice', 'Bob', 'Charlie', 'David'],
+        'age': [30, 24, 29, 35],
+        'city': ['New York', 'Paris', 'London', 'Berlin']
+    }
+    sample_df = pd.DataFrame(data)
+    agent.upload_dataframe(sample_df, MY_TABLE_ID_DF, write_disposition="WRITE_TRUNCATE")
+ 
+    # 2. Upload from Local CSV
+    csv_file_path = "sample_data.csv" # Will be created in the root project directory
+    with open(csv_file_path, "w") as f:
+        f.write("id,product,quantity,price\n")
+        f.write("1,Laptop,10,1200.50\n")
+        f.write("2,Mouse,50,25.99\n")
+        f.write("3,Keyboard,25,75.00\n")
+        f.write("4,Monitor,5,300.75\n")
+ 
+    agent.upload_csv_from_local(csv_file_path, MY_TABLE_ID_CSV, skip_leading_rows=1, write_disposition="WRITE_TRUNCATE")
+ 
+    # 3. Query data to DataFrame
+    query = f"SELECT name, age FROM `{MY_PROJECT_ID}.{MY_DATASET_ID}.{MY_TABLE_ID_DF}` WHERE age > 25 ORDER BY age DESC"
+    results_df = agent.query_to_dataframe(query)
+    logging.info("Query results (DataFrame):\n" + results_df.to_string())
+ 
+    # 4. Query data as iterable
+    query_all_products = f"SELECT * FROM `{MY_PROJECT_ID}.{MY_DATASET_ID}.{MY_TABLE_ID_CSV}`"
+    logging.info("Query results (Iterable):")
+    for row in agent.query_to_iterable(query_all_products):
+        logging.info(f"  ID: {row['id']}, Product: {row['product']}, Quantity: {row['quantity']}, Price: {row.get('price', 'N/A')}") # Access by column name
+ 
+ 
+    # --- Optional: GCS Operations (Uncomment and ensure bucket/permissions are set up) ---
+    # # Example: First upload the local CSV to GCS using gsutil or google-cloud-storage library
+    # # For this example, we assume sample_data.csv is already in GCS
+    # gcs_file_uri = f"gs://{MY_GCS_BUCKET}/data_uploads/sample_data.csv"
+    # logging.info(f"Ensure {csv_file_path} is uploaded to {gcs_file_uri} before proceeding with GCS upload to BQ.")
+    # # agent.upload_from_gcs(gcs_file_uri, "my_table_from_gcs_upload", skip_leading_rows=1, write_disposition="WRITE_TRUNCATE")
+ 
+ 
+    # # Example: Extract table to GCS
+    # extract_uri_pattern = f"gs://{MY_GCS_BUCKET}/data_extracts/{MY_TABLE_ID_DF}-export-*.csv.gz"
+    # agent.extract_table_to_gcs(MY_TABLE_ID_DF, extract_uri_pattern)
+    # logging.info(f"Table {MY_TABLE_ID_DF} extracted to GCS: {extract_uri_pattern}")
+ 
+    logging.info("BigQuery Agent operations complete.")
+ 
+if __name__ == "__main__":
+    main()
 
 ```
