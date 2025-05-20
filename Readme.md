@@ -4,7 +4,7 @@ import os
 import dotenv
 
 dotenv.load_dotenv()
-
+ 
 AGENT_NAME = "brand_search_optimization"
 DESCRIPTION = "A helpful assistant for brand search optimization."
 PROJECT = os.getenv("GOOGLE_CLOUD_PROJECT", "EMPTY")
