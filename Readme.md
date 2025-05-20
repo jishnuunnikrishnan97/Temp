@@ -202,4 +202,46 @@ ROOT_PROMPT = """
 """
 
 
+2025-05-20 15:48:37,254 - INFO - envs.py:47 - Loaded .env file for bq_table_manager at /home/user/Agents/.env
+2025-05-20 15:48:40,349 - ERROR - fast_api.py:637 - Error in event_generator: Missing key inputs argument! To use the Google AI API, provide (`api_key`) arguments. To use the Google Cloud API, provide (`vertexai`, `project` & `location`) arguments.
+Traceback (most recent call last):
+  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/cli/fast_api.py", line 626, in event_generator
+    async for event in runner.run_async(
+  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/runners.py", line 197, in run_async
+    async for event in invocation_context.agent.run_async(invocation_context):
+  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/agents/base_agent.py", line 133, in run_async
+    async for event in self._run_async_impl(ctx):
+  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/agents/llm_agent.py", line 246, in _run_async_impl
+    async for event in self._llm_flow.run_async(ctx):
+  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/flows/llm_flows/base_llm_flow.py", line 243, in run_async
+    async for event in self._run_one_step_async(invocation_context):
+  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/flows/llm_flows/base_llm_flow.py", line 268, in _run_one_step_async
+    async for llm_response in self._call_llm_async(
+  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/flows/llm_flows/base_llm_flow.py", line 483, in _call_llm_async
+    async for llm_response in llm.generate_content_async(
+  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/models/google_llm.py", line 86, in generate_content_async
+    self._api_backend,
+    ^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/functools.py", line 995, in __get__
+    val = self.func(instance)
+          ^^^^^^^^^^^^^^^^^^^
+  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/models/google_llm.py", line 161, in _api_backend
+    return 'vertex' if self.api_client.vertexai else 'ml_dev'
+                       ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/functools.py", line 995, in __get__
+    val = self.func(instance)
+          ^^^^^^^^^^^^^^^^^^^
+  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/models/google_llm.py", line 155, in api_client
+    return Client(
+           ^^^^^^^
+  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/genai/client.py", line 219, in __init__
+    self._api_client = self._get_api_client(
+                       ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/genai/client.py", line 265, in _get_api_client
+    return BaseApiClient(
+           ^^^^^^^^^^^^^^
+  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/genai/_api_client.py", line 437, in __init__
+    raise ValueError(
+ValueError: Missing key inputs argument! To use the Google AI API, provide (`api_key`) arguments. To use the Google Cloud API, provide (`vertexai`, `project` & `location`) arguments.
+
 ```
