@@ -202,46 +202,129 @@ ROOT_PROMPT = """
 """
 
 
-2025-05-20 15:48:37,254 - INFO - envs.py:47 - Loaded .env file for bq_table_manager at /home/user/Agents/.env
-2025-05-20 15:48:40,349 - ERROR - fast_api.py:637 - Error in event_generator: Missing key inputs argument! To use the Google AI API, provide (`api_key`) arguments. To use the Google Cloud API, provide (`vertexai`, `project` & `location`) arguments.
+2025-05-20 16:14:50,143 - WARNING - types.py:4572 - Warning: there are non-text parts in the response: ['function_call'], returning concatenated text result from text parts. Check the full candidates.content.parts accessor to get the full model response.
+
+Error in event_generator: table_id must be a fully-qualified ID in standard SQL format, e.g., "project.dataset.table_id", got None.sherif-440815.Finance_Contract_Agent.Employee_details
+
 Traceback (most recent call last):
+
   File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/cli/fast_api.py", line 626, in event_generator
+
     async for event in runner.run_async(
+
   File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/runners.py", line 197, in run_async
+
     async for event in invocation_context.agent.run_async(invocation_context):
+
   File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/agents/base_agent.py", line 133, in run_async
+
     async for event in self._run_async_impl(ctx):
+
   File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/agents/llm_agent.py", line 246, in _run_async_impl
+
     async for event in self._llm_flow.run_async(ctx):
+
   File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/flows/llm_flows/base_llm_flow.py", line 243, in run_async
+
     async for event in self._run_one_step_async(invocation_context):
-  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/flows/llm_flows/base_llm_flow.py", line 268, in _run_one_step_async
-    async for llm_response in self._call_llm_async(
-  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/flows/llm_flows/base_llm_flow.py", line 483, in _call_llm_async
-    async for llm_response in llm.generate_content_async(
-  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/models/google_llm.py", line 86, in generate_content_async
-    self._api_backend,
-    ^^^^^^^^^^^^^^^^^
-  File "/usr/lib/python3.12/functools.py", line 995, in __get__
-    val = self.func(instance)
-          ^^^^^^^^^^^^^^^^^^^
-  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/models/google_llm.py", line 161, in _api_backend
-    return 'vertex' if self.api_client.vertexai else 'ml_dev'
-                       ^^^^^^^^^^^^^^^
-  File "/usr/lib/python3.12/functools.py", line 995, in __get__
-    val = self.func(instance)
-          ^^^^^^^^^^^^^^^^^^^
-  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/models/google_llm.py", line 155, in api_client
-    return Client(
-           ^^^^^^^
-  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/genai/client.py", line 219, in __init__
-    self._api_client = self._get_api_client(
-                       ^^^^^^^^^^^^^^^^^^^^^
-  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/genai/client.py", line 265, in _get_api_client
-    return BaseApiClient(
-           ^^^^^^^^^^^^^^
-  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/genai/_api_client.py", line 437, in __init__
+
+  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/flows/llm_flows/base_llm_flow.py", line 272, in _run_one_step_async
+
+    async for event in self._postprocess_async(
+
+  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/flows/llm_flows/base_llm_flow.py", line 342, in _postprocess_async
+
+    async for event in self._postprocess_handle_function_calls_async(
+
+  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/flows/llm_flows/base_llm_flow.py", line 417, in _postprocess_handle_function_calls_async
+
+    if function_response_event := await functions.handle_function_calls_async(
+
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/flows/llm_flows/functions.py", line 165, in handle_function_calls_async
+
+    function_response = await __call_tool_async(
+
+                        ^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/flows/llm_flows/functions.py", line 430, in __call_tool_async
+
+    return await tool.run_async(args=args, tool_context=tool_context)
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/tools/function_tool.py", line 82, in run_async
+
+    return self.func(**args_to_call) or {}
+
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/home/user/Agents/bq_table_manager/tools/bq_table_toolkit.py", line 23, in create_or_replace_table
+
+    table = bigquery.Table(table_id, schema=schema)
+
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/cloud/bigquery/table.py", line 424, in __init__
+
+    table_ref = _table_arg_to_table_ref(table_ref)
+
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/cloud/bigquery/table.py", line 3762, in _table_arg_to_table_ref
+
+    value = TableReference.from_string(value, default_project=default_project)
+
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/cloud/bigquery/table.py", line 289, in from_string
+
+    ) = _helpers._parse_3_part_id(
+
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/cloud/bigquery/_helpers.py", line 1018, in _parse_3_part_id
+
     raise ValueError(
-ValueError: Missing key inputs argument! To use the Google AI API, provide (`api_key`) arguments. To use the Google Cloud API, provide (`vertexai`, `project` & `location`) arguments.
+
+ValueError: table_id must be a fully-qualified ID in standard SQL format, e.g., "project.dataset.table_id", got None.sherif-440815.Finance_Contract_Agent.Employee_details
+
+2025-05-20 16:14:50,152 - ERROR - __init__.py:157 - Failed to detach context
+
+Traceback (most recent call last):
+
+  File "/home/user/Agents/.venv/lib/python3.12/site-packages/opentelemetry/trace/__init__.py", line 587, in use_span
+
+    yield span
+
+  File "/home/user/Agents/.venv/lib/python3.12/site-packages/opentelemetry/sdk/trace/__init__.py", line 1105, in start_as_current_span
+
+    yield span
+
+  File "/home/user/Agents/.venv/lib/python3.12/site-packages/opentelemetry/trace/__init__.py", line 452, in start_as_current_span
+
+    yield span
+
+  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/flows/llm_flows/base_llm_flow.py", line 500, in _call_llm_async
+
+    yield llm_response
+
+GeneratorExit
+ 
+During handling of the above exception, another exception occurred:
+ 
+Traceback (most recent call last):
+
+  File "/home/user/Agents/.venv/lib/python3.12/site-packages/opentelemetry/context/__init__.py", line 155, in detach
+
+    _RUNTIME_CONTEXT.detach(token)
+
+  File "/home/user/Agents/.venv/lib/python3.12/site-packages/opentelemetry/context/contextvars_context.py", line 53, in detach
+
+    self._current_context.reset(token)
+
+ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7eb01fd59170> at 0x7eb004f2e140> was created in a different Context
+ 
 
 ```
