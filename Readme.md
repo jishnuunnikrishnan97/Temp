@@ -201,44 +201,138 @@ ROOT_PROMPT = """
     </Key Constraints>
 """
 
-2025-05-21 14:14:38,230 - INFO - envs.py:47 - Loaded .env file for zip_file_manager at /home/user/Agents/zip_file_manager/.env
-2025-05-21 14:14:38,233 - ERROR - fast_api.py:637 - Error in event_generator: 1 validation error for LlmAgent
-accepts_uploads
-  Extra inputs are not permitted [type=extra_forbidden, input_value=True, input_type=bool]
-    For further information visit https://errors.pydantic.dev/2.11/v/extra_forbidden
-Traceback (most recent call last):
-  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/cli/fast_api.py", line 625, in event_generator
-    runner = await _get_runner_async(req.app_name)
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/cli/fast_api.py", line 796, in _get_runner_async
-    root_agent = await _get_root_agent_async(app_name)
-                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/cli/fast_api.py", line 773, in _get_root_agent_async
-    agent_module = importlib.import_module(app_name)
-                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/lib/python3.12/importlib/__init__.py", line 90, in import_module
-    return _bootstrap._gcd_import(name[level:], package, level)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
-  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
-  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
-  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
-  File "<frozen importlib._bootstrap_external>", line 995, in exec_module
-  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
-  File "/home/user/Agents/zip_file_manager/__init__.py", line 1, in <module>
-    from . import agent
-  File "/home/user/Agents/zip_file_manager/agent.py", line 3, in <module>
-    from .sub_agents.extractor.agent import extractor_agent
-  File "/home/user/Agents/zip_file_manager/sub_agents/extractor/agent.py", line 6, in <module>
-    extractor_agent = Agent(
-                      ^^^^^^
-  File "/home/user/Agents/.venv/lib/python3.12/site-packages/pydantic/main.py", line 253, in __init__
-    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
-                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.ValidationError: 1 validation error for LlmAgent
-accepts_uploads
-  Extra inputs are not permitted [type=extra_forbidden, input_value=True, input_type=bool]
-    For further information visit https://errors.pydantic.dev/2.11/v/extra_forbidden
+2025-05-21 14:23:22,468 - INFO - envs.py:47 - Loaded .env file for zip_file_manager at /home/user/Agents/zip_file_manager/.env
+2025-05-21 14:23:22,528 - INFO - google_llm.py:83 - Sending out request, model: gemini-2.0-flash-001, backend: ml_dev, stream: False
+2025-05-21 14:23:22,528 - INFO - google_llm.py:89 - 
+LLM Request:
+-----------------------------------------------------------
+System Instruction:
  
-
+You are a ZIP file manager. Whenever the user uploads a ZIP archive, route it to the `zip_extractor_agent`.
+Otherwise, explain that you only handle ZIP uploads.
+ 
+ 
+You are an agent. Your internal name is "zip_file_manager".
+ 
+The description about you is "An agent to extract and list files inside uploaded ZIP archives."
+ 
+ 
+You have a list of other agents to transfer to:
+ 
+ 
+Agent name: zip_extractor_agent
+Agent description: Agent to extract ZIP files and list their contents.
+ 
+ 
+If you are the best to answer the question according to your description, you
+can answer it.
+ 
+If another agent is better for answering the question according to its
+description, call `transfer_to_agent` function to transfer the
+question to that agent. When transferring, do not generate any text other than
+the function call.
+ 
+-----------------------------------------------------------
+Contents:
+{"parts":[{"text":"Hi"}],"role":"user"}
+-----------------------------------------------------------
+Functions:
+transfer_to_agent: {'agent_name': {'type': <Type.STRING: 'STRING'>}} -> None
+-----------------------------------------------------------
+ 
+2025-05-21 14:23:22,529 - INFO - models.py:6666 - AFC is enabled with max remote calls: 10.
+2025-05-21 14:23:23,048 - INFO - _client.py:1740 - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-001:generateContent "HTTP/1.1 200 OK"
+2025-05-21 14:23:23,049 - INFO - google_llm.py:145 - 
+LLM Response:
+-----------------------------------------------------------
+Text:
+I am designed to work with ZIP files. Please upload a ZIP archive for me to process, or I can transfer you to another agent.
+ 
+-----------------------------------------------------------
+Function calls:
+ 
+-----------------------------------------------------------
+Raw response:
+{"candidates":[{"content":{"parts":[{"text":"I am designed to work with ZIP files. Please upload a ZIP archive for me to process, or I can transfer you to another agent.\n"}],"role":"model"},"finish_reason":"STOP","avg_logprobs":-0.10812436301132729}],"model_version":"gemini-2.0-flash-001","usage_metadata":{"candidates_token_count":29,"candidates_tokens_details":[{"modality":"TEXT","token_count":29}],"prompt_token_count":198,"prompt_tokens_details":[{"modality":"TEXT","token_count":198}],"total_token_count":227},"automatic_function_calling_history":[]}
+-----------------------------------------------------------
+ 
+2025-05-21 14:23:23,050 - INFO - fast_api.py:634 - Generated event in agent run streaming: {"content":{"parts":[{"text":"I am designed to work with ZIP files. Please upload a ZIP archive for me to process, or I can transfer you to another agent.\n"}],"role":"model"},"invocation_id":"e-3692ebd2-01af-4e8c-83ac-70318323c872","author":"zip_file_manager","actions":{"state_delta":{},"artifact_delta":{},"requested_auth_configs":{}},"id":"Gu4GugJN","timestamp":1747837402.474373}
+INFO:     49.36.17.173:0 - "GET /apps/zip_file_manager/users/user/sessions/a479a9c4-a032-41b6-8d48-136013aa5c66 HTTP/1.1" 200 OK
+INFO:     49.36.17.173:0 - "POST /run_sse HTTP/1.1" 200 OK
+2025-05-21 14:24:13,758 - INFO - envs.py:47 - Loaded .env file for zip_file_manager at /home/user/Agents/zip_file_manager/.env
+2025-05-21 14:24:13,797 - INFO - google_llm.py:83 - Sending out request, model: gemini-2.0-flash-001, backend: ml_dev, stream: False
+2025-05-21 14:24:13,798 - INFO - google_llm.py:89 - 
+LLM Request:
+-----------------------------------------------------------
+System Instruction:
+ 
+You are a ZIP file manager. Whenever the user uploads a ZIP archive, route it to the `zip_extractor_agent`.
+Otherwise, explain that you only handle ZIP uploads.
+ 
+ 
+You are an agent. Your internal name is "zip_file_manager".
+ 
+The description about you is "An agent to extract and list files inside uploaded ZIP archives."
+ 
+ 
+You have a list of other agents to transfer to:
+ 
+ 
+Agent name: zip_extractor_agent
+Agent description: Agent to extract ZIP files and list their contents.
+ 
+ 
+If you are the best to answer the question according to your description, you
+can answer it.
+ 
+If another agent is better for answering the question according to its
+description, call `transfer_to_agent` function to transfer the
+question to that agent. When transferring, do not generate any text other than
+the function call.
+ 
+-----------------------------------------------------------
+Contents:
+{"parts":[{"text":"Hi"}],"role":"user"}
+{"parts":[{"text":"I am designed to work with ZIP files. Please upload a ZIP archive for me to process, or I can transfer you to another agent.\n"}],"role":"model"}
+{"parts":[{"text":"Zip file"},{"inline_data":{"mime_type":"application/zip"}}],"role":"user"}
+-----------------------------------------------------------
+Functions:
+transfer_to_agent: {'agent_name': {'type': <Type.STRING: 'STRING'>}} -> None
+-----------------------------------------------------------
+ 
+2025-05-21 14:24:13,798 - INFO - models.py:6666 - AFC is enabled with max remote calls: 10.
+2025-05-21 14:24:13,918 - INFO - _client.py:1740 - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-001:generateContent "HTTP/1.1 400 Bad Request"
+2025-05-21 14:24:13,924 - ERROR - fast_api.py:637 - Error in event_generator: 400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': 'Unable to submit request because it has a mimeType parameter with value application/zip, which is not supported. Update the mimeType and try again. Learn more: https://cloud.google.com/vertex-ai/generative-ai/docs/model-reference/gemini', 'status': 'INVALID_ARGUMENT'}}
+Traceback (most recent call last):
+  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/cli/fast_api.py", line 626, in event_generator
+    async for event in runner.run_async(
+  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/runners.py", line 197, in run_async
+    async for event in invocation_context.agent.run_async(invocation_context):
+  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/agents/base_agent.py", line 133, in run_async
+    async for event in self._run_async_impl(ctx):
+  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/agents/llm_agent.py", line 246, in _run_async_impl
+    async for event in self._llm_flow.run_async(ctx):
+  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/flows/llm_flows/base_llm_flow.py", line 243, in run_async
+    async for event in self._run_one_step_async(invocation_context):
+  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/flows/llm_flows/base_llm_flow.py", line 268, in _run_one_step_async
+    async for llm_response in self._call_llm_async(
+  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/flows/llm_flows/base_llm_flow.py", line 483, in _call_llm_async
+    async for llm_response in llm.generate_content_async(
+  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/models/google_llm.py", line 140, in generate_content_async
+    response = await self.api_client.aio.models.generate_content(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/genai/models.py", line 6672, in generate_content
+    response = await self._generate_content(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/genai/models.py", line 5674, in _generate_content
+    response_dict = await self._api_client.async_request(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/genai/_api_client.py", line 789, in async_request
+    result = await self._async_request(http_request=http_request, stream=False)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/genai/_api_client.py", line 733, in _async_request
+    await errors.APIError.raise_for_async_response(response)
+  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/genai/errors.py", line 129, in raise_for_async_response
+    raise ClientError(status_code, response_json, response)
+google.genai.errors.ClientError: 400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': 'Unable to submit request because it has a mimeType parameter with value application/zip, which is not supported. Update the mimeType and try again. Learn more: https://cloud.google.com/vertex-ai/generative-ai/docs/model-reference/gemini', 'status': 'INVALID_ARGUMENT'}}
 ```
