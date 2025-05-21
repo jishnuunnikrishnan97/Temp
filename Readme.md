@@ -201,59 +201,44 @@ ROOT_PROMPT = """
     </Key Constraints>
 """
 
-2025-05-21 07:20:35,702 - ERROR - fast_api.py:637 - Error in event_generator: insert_row() got an unexpected keyword argument 'data'
+2025-05-21 14:14:38,230 - INFO - envs.py:47 - Loaded .env file for zip_file_manager at /home/user/Agents/zip_file_manager/.env
+2025-05-21 14:14:38,233 - ERROR - fast_api.py:637 - Error in event_generator: 1 validation error for LlmAgent
+accepts_uploads
+  Extra inputs are not permitted [type=extra_forbidden, input_value=True, input_type=bool]
+    For further information visit https://errors.pydantic.dev/2.11/v/extra_forbidden
 Traceback (most recent call last):
-  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/cli/fast_api.py", line 626, in event_generator
-    async for event in runner.run_async(
-  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/runners.py", line 197, in run_async
-    async for event in invocation_context.agent.run_async(invocation_context):
-  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/agents/base_agent.py", line 133, in run_async
-    async for event in self._run_async_impl(ctx):
-  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/agents/llm_agent.py", line 246, in _run_async_impl
-    async for event in self._llm_flow.run_async(ctx):
-  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/flows/llm_flows/base_llm_flow.py", line 243, in run_async
-    async for event in self._run_one_step_async(invocation_context):
-  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/flows/llm_flows/base_llm_flow.py", line 272, in _run_one_step_async
-    async for event in self._postprocess_async(
-  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/flows/llm_flows/base_llm_flow.py", line 342, in _postprocess_async
-    async for event in self._postprocess_handle_function_calls_async(
-  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/flows/llm_flows/base_llm_flow.py", line 417, in _postprocess_handle_function_calls_async
-    if function_response_event := await functions.handle_function_calls_async(
-                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/flows/llm_flows/functions.py", line 165, in handle_function_calls_async
-    function_response = await __call_tool_async(
-                        ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/flows/llm_flows/functions.py", line 430, in __call_tool_async
-    return await tool.run_async(args=args, tool_context=tool_context)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/tools/function_tool.py", line 82, in run_async
-    return self.func(**args_to_call) or {}
-           ^^^^^^^^^^^^^^^^^^^^^^^^^
-TypeError: insert_row() got an unexpected keyword argument 'data'
-2025-05-21 07:20:35,702 - ERROR - __init__.py:157 - Failed to detach context
-Traceback (most recent call last):
-  File "/home/user/Agents/.venv/lib/python3.12/site-packages/opentelemetry/trace/__init__.py", line 587, in use_span
-    yield span
-  File "/home/user/Agents/.venv/lib/python3.12/site-packages/opentelemetry/sdk/trace/__init__.py", line 1105, in start_as_current_span
-    yield span
-  File "/home/user/Agents/.venv/lib/python3.12/site-packages/opentelemetry/trace/__init__.py", line 452, in start_as_current_span
-    yield span
-  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/flows/llm_flows/base_llm_flow.py", line 500, in _call_llm_async
-    yield llm_response
-GeneratorExit
- 
-During handling of the above exception, another exception occurred:
- 
-Traceback (most recent call last):
-  File "/home/user/Agents/.venv/lib/python3.12/site-packages/opentelemetry/context/__init__.py", line 155, in detach
-    _RUNTIME_CONTEXT.detach(token)
-  File "/home/user/Agents/.venv/lib/python3.12/site-packages/opentelemetry/context/contextvars_context.py", line 53, in detach
-    self._current_context.reset(token)
-ValueError: <Token var=<ContextVar name='current_context' default={} at 0x7fbaaa239530> at 0x7fba6765ba80> was created in a different Context
-
-module 'google.cloud.storage._helpers' has no attribute '_glob_match'
- 
-matches = [b.name for b in blobs if storage._helpers._glob_match(b.name, pattern)]
+  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/cli/fast_api.py", line 625, in event_generator
+    runner = await _get_runner_async(req.app_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/cli/fast_api.py", line 796, in _get_runner_async
+    root_agent = await _get_root_agent_async(app_name)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/Agents/.venv/lib/python3.12/site-packages/google/adk/cli/fast_api.py", line 773, in _get_root_agent_async
+    agent_module = importlib.import_module(app_name)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/importlib/__init__.py", line 90, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 995, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/home/user/Agents/zip_file_manager/__init__.py", line 1, in <module>
+    from . import agent
+  File "/home/user/Agents/zip_file_manager/agent.py", line 3, in <module>
+    from .sub_agents.extractor.agent import extractor_agent
+  File "/home/user/Agents/zip_file_manager/sub_agents/extractor/agent.py", line 6, in <module>
+    extractor_agent = Agent(
+                      ^^^^^^
+  File "/home/user/Agents/.venv/lib/python3.12/site-packages/pydantic/main.py", line 253, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for LlmAgent
+accepts_uploads
+  Extra inputs are not permitted [type=extra_forbidden, input_value=True, input_type=bool]
+    For further information visit https://errors.pydantic.dev/2.11/v/extra_forbidden
  
 
 ```
