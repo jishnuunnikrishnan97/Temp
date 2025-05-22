@@ -1,5 +1,5 @@
 ```
-##subagent/contract/contract.py:
+##Agents/COntract_leakage_agent/subagent/contract/contract.py:
 from google.adk.agents import Agent
 from ai_contract_intelligence.sub_agents.contract import contract_prompt
 contract_agent = Agent(
@@ -9,7 +9,7 @@ contract_agent = Agent(
     instruction=contract_prompt.PROMPT,    
 )
 
-##subagent/contract/prompt.py:
+##Agents/COntract_leakage_agent/subagent/contract/prompt.py:
 PROMPT= """
                     **Task:** Extract comprehensive information from the provided contract text and structure format.
                     **Contract Text:**
@@ -74,7 +74,7 @@ PROMPT= """
                     **Output:** Provide the extracted data strictly conforming to the `models.Contract` Pydantic model structure, including nested `parties` and `billable_items`.
                     """
 
-##subagent/invoice/invoice.py:
+##Agents/COntract_leakage_agent/subagent/invoice/invoice.py:
 from google.adk.agents import Agent
 from ai_contract_intelligence.sub_agents.invoice import invoice_prompt
 invoice_agent = Agent(
@@ -84,7 +84,7 @@ invoice_agent = Agent(
     instruction=invoice_prompt.PROMPT,    
 )
 
-##subagent/invoice/prompt.py:
+##Agents/COntract_leakage_agent/subagent/invoice/prompt.py:
 PROMPT = """
                     **Task:** Extract comprehensive information from the provided invoice text and structure format.
 
@@ -138,6 +138,96 @@ PROMPT = """
 
                     **Output:** Provide the extracted data strictly conforming to the `models.Invoice` Pydantic model structure, including the nested `billable_items`.
                     """
+## Agents/COntract_leakage_agent/agent.py
+from google.adk.agents import Agent
+
+from .sub_agents.contract.contract_agent import contract_agent
+from .sub_agents.invoice.invoice_agent import invoice_agent
+# from .sub_agents.upload.batch_upload_agent import batch_upload_agent
+#   from .sub_agents.leackage_data.leackage_agent import leackage_agent
+
+root_agent = Agent(
+    name="ai_contract_intelligence",
+    model="gemini-2.0-flash",
+    description="Contract Intelligence Agent",
+    instruction="""
+    You are an AI Assistant responsible for extracting, summarizing, and monitoring procurement contract clauses.
+        
+        If the user has provided a contract document, proceed with the extraction and summarization.
+        Otherwise, first request the user to provide the contract document.
+        
+        Your primary task is to dissect and synthesize the provided contract document, clearly extracting key clauses and summarizing them effectively. 
+        Structure your response using headings for each key clause.
+        Ensure the summary is coherent and integrates the essential points smoothly.
+        
+        The user will give the contract document as an input in text format.
+        Map the contract document to the context variable "contract_document."
+        
+        **Crucially: Your entire response MUST be grounded *exclusively* on the information provided in the 'Contract Document' below. Do NOT add any external knowledge, facts, or details not present in the document.**
+        
+        **Output Format:**
+        
+        ## Summary of Procurement Contract
+        
+        ### Contract Details
+        - **Contract Number**: (Extracted contract number)
+        - **Vendor Name**: (Extracted vendor name)
+        - **Effective Date**: (Extracted effective date)
+        - **Expiration Date**: (Extracted expiration date)
+        
+        ### Payment Terms
+        (Extract key payment terms)
+        
+        ### Delivery Schedule
+        (Extract key delivery schedule and conditions)
+        
+        ### Confidentiality Clause
+        (Summarize confidentiality obligations)
+        
+        ### Termination Clause
+        (Outline termination conditions and notice period)
+        
+        ### Compliance and Standards
+        (Summarize compliance and standards requirements)
+        
+        ### Warranty
+        (Specify warranty terms and period)
+        
+        ### Dispute Resolution
+        (Detail dispute resolution mechanisms)
+        
+        ### Force Majeure
+        (Identify force majeure conditions)
+        
+        ### Governing Law
+        (Specify governing law)
+        
+        ### Inspection and Acceptance
+        (Summarize inspection and acceptance criteria)
+        
+        ### Pricing
+        (Outline pricing terms and conditions)
+        
+        ### Important Contacts
+        - **Procurement Officer**: (Extracted procurement officer name)
+        - **Vendor Contact**: (Extracted vendor contact name)
+        
+        ### Additional Notes
+        (Include any additional notes provided in the contract)
+        
+        Output *only* the structured report following this format. 
+        Do not include introductory or concluding phrases outside this structure, 
+        and strictly adhere to using only the provided contract document content.
+
+        You are responsible for delegating tasks to the following agent:
+        - contract_agent
+        - invoice_agent
+    """,
+    sub_agents= [contract_agent, invoice_agent]
+)
+
+## Agents/COntract_leakage_agent/__init__.py
+from .agent import root_agent
 
 leakage:
 (1)	Pricing Discrepancies: Identify differences in pricing for comparable products and services between invoices and contracts.
