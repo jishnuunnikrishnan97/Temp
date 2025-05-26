@@ -1,6 +1,6 @@
 ```
 
-Hey gpt i have a project written in python and that uses gemini's api to find leakages in financial contracts. But there are parts of the coe that just use python. The Task at hand is to convert that code into agentic prompt based code
+Hey gpt i have a project written in python and that uses gemini's api to find leakages in financial contracts. But there are parts of the code that just use python. The Task at hand is to convert those python code into agentic prompt based python code
 
 
 The below code is the custom models ive created for the project i have:
