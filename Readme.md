@@ -146,4 +146,44 @@ def call_agent(query):
 
 call_agent("callback example")
 
+from google.adk.agents import Agent
+from .sub_agents.contract.agent import contract_agent
+from .sub_agents.invoices.agent import invoice_agent
+from .sub_agents.leakage.agent import leakage_agent
+
+from google.adk.agents import LlmAgent
+from google.adk.agents.callback_context import CallbackContext
+from google.adk.models import LlmResponse, LlmRequest
+from typing import Optional
+
+
+def my_before_model_logic(callback_context: CallbackContext, llm_request: LlmRequest) -> Optional[LlmResponse]:
+    print(f"Callback running before model call for agent: {callback_context.agent_name}")
+    #print("content_array:" , llm_request.contents) 
+    data = llm_request.contents[-1].parts[1].inline_data.data 
+    print("print_data: ", data)   
+    return None
+
+root_agent = Agent(
+  name="contract_leakage_agent",
+  model="gemini-1.5-flash", # Assuming "gemini-2.0-flash" was a typo, or use a valid model
+  description="Interactive agent to ingest a contract, multiple invoices, then detect and explain financial leakages.",
+  instruction="""
+
+1. Greet the user and explain capabilities: can extract contract info, invoice info, detect leakages, answer follow-up questions.
+2. Prompt user: "Please upload your contract document pdf or docx via the `document_uploader`." Store in `contract_document`.
+3. Delegate to `contract_agent` to extract and display a **Contract Summary** in markdown.
+4. Prompt user: "Please upload your invoice document pdf or docx."
+4. Loop: ask "Upload an invoice? (yes/no)". On 'yes', prompt upload, store `invoice_document`, delegate to `invoice_agent` and append results to `invoices_data` and show an **Invoice Summary** in markdown; repeat. On 'no', break.
+5. Once all invoices are collected, invoke `leakage_detector` subagent with `contract_data` and `invoices_data`, display detected leakages.
+6. Finally, allow user to ask questions: for any follow-up, route to `leakage_detector` with context and answer.
+""",
+  sub_agents=[contract_agent, invoice_agent, leakage_agent],
+  before_model_callback=my_before_model_logic
+)
+
+
+
+
+
 ```
